@@ -743,7 +743,14 @@ footer p {
 .site-footer,
 footer a#back_to_top i {
   color: #899596;
+
 }
+
+IMG.displayed {
+    display: block;
+    margin-left: auto;
+    margin-right: auto
+  }
 
 /*************************************************
  *  Button Primary: Color Override
