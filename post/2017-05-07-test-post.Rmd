@@ -1,0 +1,265 @@
+---
+title: Crime Graphs
+author: John Hamilton Bradford
+date: '2017-05-07'
+slug: test-post
+categories: []
+tags: []
+---
+
+
+Scatterplot - Violent Crime & Population by Race: Police Killings vs No Police Killings of Civilians.  (Washington Post)
+
+```{r, warning=FALSE, echo=FALSE, message=FALSE, tidy=TRUE}
+setwd("C:/Users/ssfaculty/Dropbox/R/policeShooting")
+library(readr)
+library(tidyr)
+library(dplyr)
+library(tibble)
+
+library(readr)
+library(sandwich)
+library(lmtest)
+library(arm)
+library(readr)
+library(tidyr)
+library(dplyr)
+library(tibble)
+
+
+##Loadin two files, kData.c.UCR.csv & UCRData.c.R with package fst
+kData.c.UCR <- fst::read.fst("kData_c_UCR.csv")  ##only counties with police killings
+UCRData.c.R <- fst::read.fst("UCRData_c_R.csv")  #rates
+#fst::write.fst(UCRData.c, path="UCRData_c.csv")  ##frequencies
+bls_cn <- fst::read.fst("bls_cn.csv")
+
+###datasets - full variables, only counties where police killin occurs
+##RD = regression data; units = counties
+rd <- fst::read.fst("regressData_fast.csv") 
+
+
+lott.ols <- rd %>% filter(dataSource=="lott") 
+wapo.ols<-  rd %>% filter(dataSource=="Wapo") 
+
+##Data - slightly different aggregation than rd, combining big cities
+#rd.city <- fst::read.fst("rd_city.csv")
+
+##original data with ecological, county, state, level vars attached
+##units = individual cases
+wapo_rd <- fst::read.fst("rdWapo.csv")
+lott_rd <- fst::read.fst("rdLott.csv")
+
+
+##Data for scatterplots, logistic regression comparing counties with killed to no killed
+##units = counties + Race
+wapo_sp <- fst::read.fst("wapo_sp.csv")
+lott_sp <- fst::read.fst("lott_sp.csv")
+
+lott.total <- lott_sp %>% filter(Race=="Total") %>% ungroup() %>% dplyr::select(-Race) %>% 
+  mutate(
+    Killing=0, Killing=replace(Killing, which(killed.county>0), 1),
+    Killing=factor(Killing),
+    pop_log = log(pop.total),
+    BlackPrcnt = pop.black / pop.total,
+    BlackPrcnt_sq = BlackPrcnt^2,
+    BlackPrcnt_log = log(BlackPrcnt),
+    polKill_r = 100000*killed.county/pop.total,
+    polKill_log = log(polKill_r+1),
+    vc_r_log = log(vc_c_r)
+  ) %>% 
+  mutate_all( funs(replace(., is.nan(.), NA))) %>% 
+  mutate_all( funs(replace(., is.infinite(.), NA))) 
+
+##Adding crime principle components of logged counts, and logged rates
+pc1.crime_freq =  prcomp(~ log(murder_c+1) + log(vc_c+1) + log(dui_c+1) + log(vandal_c+1) +
+                           log(theft_c+1) + log(drug_poss_c+1) + log(drug_sale_c+1), 
+                         data=lott.total,
+                         scale. = T, center=TRUE,
+                         na.action=na.omit)$x[,1]
+
+pc1.crime_rate =  prcomp(~ log(murder_c_r+1) + log(vc_c_r+1) + log(dui_c_r+1) + log(vandal_c_r+1) +
+                           log(theft_c_r+1) + log(drug_poss_c_r+1) + log(drug_sale_c_r+1), 
+                         data=lott.total,
+                         scale. = T, center=TRUE,
+                         na.action=na.omit)$x[,1]
+lott.total$pc1.crime_freq <- pc1.crime_freq
+lott.total$pc1.crime_rate <- pc1.crime_rate
+
+
+
+wapo.total <- wapo_sp %>% filter(Race=="Total") %>% ungroup() %>% dplyr::select(-Race) %>% 
+  mutate(
+    Killing=0, Killing=replace(Killing, which(killed.county>0), 1),
+    Killing=factor(Killing),
+    pop_log = log(pop.total),
+    BlackPrcnt = pop.black / pop.total,
+    BlackPrcnt_sq = BlackPrcnt^2,
+    BlackPrcnt_log = log(BlackPrcnt),
+    polKill_r = 100000*killed.county/pop.total,
+    polKill_log = log(polKill_r+1),
+    vc_r_log = log(vc_c_r)
+  ) %>% 
+  mutate_all( funs(replace(., is.nan(.), NA))) %>% 
+  mutate_all( funs(replace(., is.infinite(.), NA))) 
+
+##Adding crime principle components of logged counts, and logged rates
+pc1.crime_freq =  prcomp(~ log(murder_c+1) + log(vc_c+1) + log(dui_c+1) + log(vandal_c+1) +
+                           log(theft_c+1) + log(drug_poss_c+1) + log(drug_sale_c+1), 
+                         data=wapo.total,
+                         scale. = T, center=TRUE,
+                         na.action=na.omit)$x[,1]
+
+pc1.crime_rate =  prcomp(~ log(murder_c_r+1) + log(vc_c_r+1) + log(dui_c_r+1) + log(vandal_c_r+1) +
+                           log(theft_c_r+1) + log(drug_poss_c_r+1) + log(drug_sale_c_r+1), 
+                         data=wapo.total,
+                         scale. = T, center=TRUE,
+                         na.action=na.omit)$x[,1]
+wapo.total$pc1.crime_freq <- pc1.crime_freq
+wapo.total$pc1.crime_rate <- pc1.crime_rate
+
+rd.city <- fst::read.fst("rd_city.csv")
+
+```
+
+
+
+```{r, warning=FALSE, tidy=TRUE, message=FALSE, echo=FALSE, fig.width=9}
+library(ggplot2)
+library(ggthemes)
+
+wh_vc_mean <- mean(wapo_sp$vc_c[which(wapo_sp$Race=="White & Hispanic" &  wapo_sp$killed.county.white==0)], na.rm=T)
+wh_vc_meanK <- mean(wapo_sp$vc_c[which(wapo_sp$Race=="White & Hispanic" & wapo_sp$killed.county.white>0)], na.rm=T)
+wh_p_mean <- mean(wapo_sp$popUCR.c[which(wapo_sp$Race=="White & Hispanic" & wapo_sp$killed.county.white==0)], na.rm=T)
+wh_p_meanK <- mean(wapo_sp$popUCR.c[which(wapo_sp$Race=="White & Hispanic" & wapo_sp$killed.county.white>0)], na.rm=T)
+wh_rate1 <- wh_vc_mean / wh_p_mean
+wh_rateK <- wh_vc_meanK / wh_p_meanK
+
+b_vc_mean <- mean(wapo_sp$vc_c[which(wapo_sp$Race=="Black" & wapo_sp$killed.county.black==0)], na.rm=T)
+b_vc_meanK <- mean(wapo_sp$vc_c[which(wapo_sp$Race=="Black" & wapo_sp$killed.county.black>0)], na.rm=T)
+b_p_mean <- mean(wapo_sp$popUCR.c[which(wapo_sp$Race=="Black" & wapo_sp$killed.county.black==0)], na.rm=T)
+b_p_meanK <- mean(wapo_sp$popUCR.c[which(wapo_sp$Race=="Black" & wapo_sp$killed.county.black>0)], na.rm=T)
+b_rate1 <- b_vc_mean / b_p_mean
+b_rateK <- b_vc_meanK / b_p_meanK
+
+ ggplot(data=filter(wapo_sp, vc_c>0 & popUCR.c>0 & Race != "Total" & Race != "Asian" & Race != "Native American"),
+                   aes(x=popUCR.c, y=vc_c)) +
+  geom_point(aes(), color="gray", alpha=0.1) +
+  
+  scale_y_log10(breaks=c(1, 10, 100, 1000, 10000), 
+                sec.axis = sec_axis(~ ., 
+                                    breaks = c(100, 1000, 10000))) +
+  
+  scale_x_log10(breaks=c(10, 100, 1000, 10000, 100000, 1000000)) +
+  theme_gdocs() +
+  ggtitle(label="Population, Violent Crime Arrests, and Police Killings by Race",
+          subtitle = "Washington Post (2015-16) & Uniform Crime Reports (2014)") +
+  xlab(label="Race-Specific County Population") +
+  ylab(label="Frequency of Arrests (2014)") +
+
+  geom_hline(data=filter(wapo_sp, Race=="White & Hispanic", killed.county.white==0),
+             aes(group=Race, yintercept=mean(vc_c, na.rm=T)), color="gray") +
+  
+  geom_hline(data=filter(wapo_sp, Race=="White & Hispanic" & killed.county.white > 0),
+             aes(group=Race, yintercept=mean(vc_c, na.rm=T), color=Race), size=1) +
+  
+  geom_hline(data=filter(wapo_sp, Race=="Black", killed.county.black==0),
+             aes(group=Race, yintercept=mean(vc_c, na.rm=T)), color="gray") +
+  
+  geom_hline(data=filter(wapo_sp, Race=="Black" & killed.county.black > 0),
+             aes(group=Race, yintercept=mean(vc_c, na.rm=T), color=Race), size=1) +
+  
+  ##plotting the counties with police killings
+  geom_point(data=filter(wapo_sp, killed.county.white > 0 & Race=="White & Hispanic"),
+             aes(size=killed.county.white, color=Race, shape=Race), alpha=.4) +
+  
+  geom_point(data=filter(wapo_sp, killed.county.black > 0 & Race=="Black"),
+             aes(size=killed.county.black, color=Race, shape=Race), alpha=.4) +
+  
+  geom_vline(data=filter(wapo_sp, Race=="White & Hispanic", killed.county.white==0),
+             aes(group=Race, xintercept=mean(popUCR.c, na.rm=T)), color="gray") +
+  
+  geom_vline(data=filter(wapo_sp, Race=="White & Hispanic" & killed.county.white>0),
+             aes(group=Race, xintercept=mean(popUCR.c, na.rm=T), color=Race), size=1) +
+
+  geom_vline(data=filter(wapo_sp, Race=="Black", killed.county.black==0),
+             aes(group=Race, xintercept=mean(popUCR.c, na.rm=T)), color="gray") +
+  
+  geom_vline(data=filter(wapo_sp, Race=="Black" & killed.county.black>0),
+             aes(group=Race, xintercept=mean(popUCR.c, na.rm=T), color=Race), size=1) +
+  
+     
+  geom_text(data=filter(wapo_sp, Race=="White & Hispanic"),
+             aes(y=wh_vc_mean, x=wh_p_mean, 
+                 label=paste(round(100000*wh_rate1), " per 100k", sep="")), 
+             size=3.2, vjust = "outward", hjust = "inward") +
+  
+  geom_text(data=filter(wapo_sp, Race=="White & Hispanic"),
+             aes(y=wh_vc_meanK+100, x=wh_p_meanK, 
+                 label=paste(round(100000*wh_rateK), " per 100k", sep="")), 
+             size=3.2, vjust = "outward", hjust = "outward", fontface="bold") +
+  
+  geom_text(data=filter(wapo_sp, Race=="Black"),
+             aes(y=b_vc_mean, x=b_p_mean, 
+                 label=paste(round(100000*b_rate1), " per 100k", sep="")), 
+             size=3.2, vjust = "outward", hjust = "outward") +
+  
+  geom_text(data=filter(wapo_sp, Race=="Black"),
+             aes(y=b_vc_meanK+100, x=b_p_meanK, 
+                 label=paste(round(100000*b_rateK), " per 100k", sep="")), 
+             size=3.2, vjust = "outward", hjust = "outward", fontface="bold") +
+  
+  geom_point(data=filter(wapo_sp, Race=="White & Hispanic"),
+             aes(y=wh_vc_mean, x=wh_p_mean), size=2) +
+  geom_point(data=filter(wapo_sp, Race=="White & Hispanic"),
+             aes(y=wh_vc_meanK, x=wh_p_meanK), size=2) +
+  geom_point(data=filter(wapo_sp, Race=="Black"),
+             aes(y=b_vc_mean, x=b_p_mean), size=2) +
+  geom_point(data=filter(wapo_sp, Race=="Black"),
+             aes(y=b_vc_meanK, x=b_p_meanK), size=2) +
+  
+  
+  geom_segment(data=filter(wapo_sp, Race=="White & Hispanic"),
+               aes(x=150, xend=150, y=wh_vc_mean, yend=wh_vc_meanK),
+               arrow=arrow(length=unit(.2, "cm"))) +
+
+  geom_segment(data=filter(wapo_sp, Race=="White & Hispanic"),
+               aes(x=150, xend=150, y=wh_vc_meanK, yend=wh_vc_mean),
+               arrow=arrow(length=unit(.2, "cm"))) +
+  
+  geom_text(data=filter(wapo_sp, Race=="White & Hispanic"),
+            aes(x=150, y=wh_vc_mean, label=round(wh_vc_mean)), vjust = "outward", size=3.2) +
+  
+  geom_text(data=filter(wapo_sp, Race=="White & Hispanic"),
+            aes(x=150, y=wh_vc_meanK+50, label=round(wh_vc_meanK)), vjust = "outward", size=3.2) +
+  
+  geom_segment(data=filter(wapo_sp, Race=="Black"),
+               aes(x=150, xend=150, y=b_vc_mean, yend=b_vc_meanK),
+               arrow=arrow(length=unit(.2, "cm"))) +
+
+  geom_segment(data=filter(wapo_sp, Race=="Black"),
+               aes(x=150, xend=150, y=b_vc_meanK, yend=b_vc_mean),
+               arrow=arrow(length=unit(.2, "cm"))) +
+  
+  geom_text(data=filter(wapo_sp, Race=="Black"),
+            aes(x=150, y=b_vc_mean, label=round(b_vc_mean)), vjust = "outward", size=3.2) +
+  
+  geom_text(data=filter(wapo_sp, Race=="Black"),
+            aes(x=150, y=b_vc_meanK+50, label=round(b_vc_meanK)), vjust = "outward", size=3.2) +
+  
+  
+  guides(linetype=FALSE, fill=FALSE,color=FALSE, shape=FALSE, size=FALSE ) +  
+  
+  ggsci::scale_color_d3() +
+  #scale_color_brewer(type="qual", palette=6) +
+  
+  
+  labs(color="", linetype="", shape="", size="Killed by Police") +
+    theme(legend.position = c(0.15, 0.85),
+        axis.title.y = element_text(size = rel(.95)),
+        panel.grid.major = element_blank(),
+        axis.ticks.y = element_line(),
+        panel.grid.minor = element_blank()) +
+  coord_cartesian(ylim=c(1,18000), xlim=c(100, 2500000)) +  ##Zoom in on counties with more than 1 arrest
+  facet_wrap(~Race, ncol=2) 
+
+```
