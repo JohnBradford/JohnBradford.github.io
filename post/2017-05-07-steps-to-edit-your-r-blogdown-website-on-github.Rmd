@@ -1,0 +1,15 @@
+---
+title: Steps to Edit Your R Blogdown Website on Github
+author: John Hamilton Bradford
+date: '2017-05-07'
+slug: steps-to-edit-your-r-blogdown-website-on-github
+categories: []
+tags: []
+---
+
+There is probably a more efficient way to implement these changes, but for now, the following works when updating your github page using the blogdown R package:
+
+1. Create/Edit the files in source directory (e.g. in RStudio or Windows)
+2. In RStudio, run blogdown::serve_site() or from 'Addins' menu.  This updates the public folder.
+3. Within bash shell of public repository folder, stage, commit, and push to github.
+

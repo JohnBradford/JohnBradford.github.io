@@ -40,6 +40,21 @@
     </item>
     
     <item>
+      <title>Steps to Edit Your R Blogdown Website on Github</title>
+      <link>/post/steps-to-edit-your-r-blogdown-website-on-github/</link>
+      <pubDate>Sun, 07 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/post/steps-to-edit-your-r-blogdown-website-on-github/</guid>
+      <description>&lt;p&gt;There is probably a more efficient way to implement these changes, but for now, the following works when updating your github page using the blogdown R package:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;Create/Edit the files in source directory (e.g. in RStudio or Windows)&lt;/li&gt;
+&lt;li&gt;In RStudio, run blogdown::serve_site() or from ‘Addins’ menu. This updates the public folder.&lt;/li&gt;
+&lt;li&gt;Within bash shell of public repository folder, stage, commit, and push to github.&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+    </item>
+    
+    <item>
       <title>The Treadmill of Destruction in Comparative Perspective: A Panel Study of Military Spending and Carbon Emissions, 1960-2014.</title>
       <link>/publication/jwsr_co2_military/</link>
       <pubDate>Mon, 01 May 2017 00:00:00 +0000</pubDate>
@@ -59,32 +74,12 @@
     </item>
     
     <item>
-      <title>A Person Re-Identification System For Mobile Devices</title>
-      <link>/publication/person-re-identification/</link>
-      <pubDate>Tue, 01 Sep 2015 00:00:00 +0000</pubDate>
-      
-      <guid>/publication/person-re-identification/</guid>
-      <description>&lt;p&gt;More detail can easily be written here using &lt;em&gt;Markdown&lt;/em&gt; and $\rm \LaTeX$ math code.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
       <title>Explaining Social Action Revisited: A Reply to John Levi Martin</title>
       <link>/publication/cpst_martin_reply/</link>
       <pubDate>Wed, 01 Jan 2014 00:00:00 +0000</pubDate>
       
       <guid>/publication/cpst_martin_reply/</guid>
       <description></description>
-    </item>
-    
-    <item>
-      <title>Mobile visual clothing search</title>
-      <link>/publication/clothing-search/</link>
-      <pubDate>Mon, 01 Jul 2013 00:00:00 +0000</pubDate>
-      
-      <guid>/publication/clothing-search/</guid>
-      <description>&lt;p&gt;More detail can easily be written here using &lt;em&gt;Markdown&lt;/em&gt; and $\rm \LaTeX$ math code.&lt;/p&gt;
-</description>
     </item>
     
   </channel>

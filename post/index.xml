@@ -21,5 +21,20 @@
 </description>
     </item>
     
+    <item>
+      <title>Steps to Edit Your R Blogdown Website on Github</title>
+      <link>/post/steps-to-edit-your-r-blogdown-website-on-github/</link>
+      <pubDate>Sun, 07 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/post/steps-to-edit-your-r-blogdown-website-on-github/</guid>
+      <description>&lt;p&gt;There is probably a more efficient way to implement these changes, but for now, the following works when updating your github page using the blogdown R package:&lt;/p&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;Create/Edit the files in source directory (e.g. in RStudio or Windows)&lt;/li&gt;
+&lt;li&gt;In RStudio, run blogdown::serve_site() or from ‘Addins’ menu. This updates the public folder.&lt;/li&gt;
+&lt;li&gt;Within bash shell of public repository folder, stage, commit, and push to github.&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+    </item>
+    
   </channel>
 </rss>
