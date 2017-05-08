@@ -11,16 +11,6 @@
     <atom:link href="/post/" rel="self" type="application/rss+xml" />
     
     <item>
-      <title>Another test of blogpost</title>
-      <link>/post/another-test-of-blogpost/</link>
-      <pubDate>Sun, 07 May 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/post/another-test-of-blogpost/</guid>
-      <description>&lt;p&gt;This is another test.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
       <title>Crime Graphs</title>
       <link>/post/test-post/</link>
       <pubDate>Sun, 07 May 2017 00:00:00 +0000</pubDate>
