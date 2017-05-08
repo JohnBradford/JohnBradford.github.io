@@ -1,0 +1,10 @@
+---
+title: Another test of blogpost
+author: John Hamilton Bradford
+date: '2017-05-07'
+slug: another-test-of-blogpost
+categories: []
+tags: []
+---
+
+This is another test.  
