@@ -16,18 +16,272 @@
       <pubDate>Fri, 12 May 2017 00:00:00 +0000</pubDate>
       
       <guid>/post/police-shooting-heat-maps-county-level/</guid>
-      <description>&lt;p&gt;Below I combine the Lott &amp;amp; Moody (2016) data set covering 2013 to 2015 and the Washington Post data for 2016.&lt;/p&gt;
-&lt;div id=&#34;heatmap-of-count-data&#34; class=&#34;section level3&#34;&gt;
-&lt;h3&gt;1. Heatmap of Count Data&lt;/h3&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2017-05-12-police-shooting-heat-maps-county-level_files/figure-html/unnamed-chunk-2-1.png&#34; width=&#34;1152&#34; /&gt;&lt;/p&gt;
+      <description>&lt;p&gt;Below are some new county-level heat maps of police shooting data, compiled from the Lott &amp;amp; Moody (2016) data for years 2013-2015, and the Washington Post for 2016. Below the graphs, the R code is provided.&lt;/p&gt;
+&lt;div class=&#34;figure&#34;&gt;
+&lt;img src=&#34;/img/policeShoot/map_county_frequency_1366_768.png&#34; alt=&#34;Figure 1. Frequency of Civilians Killed by Police per County&#34; /&gt;
+&lt;p class=&#34;caption&#34;&gt;Figure 1. Frequency of Civilians Killed by Police per County&lt;/p&gt;
 &lt;/div&gt;
-&lt;div id=&#34;heatmap-of-rates---killed-civilians-per-100000&#34; class=&#34;section level3&#34;&gt;
-&lt;h3&gt;2. Heatmap of Rates - Killed Civilians per 100,000&lt;/h3&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2017-05-12-police-shooting-heat-maps-county-level_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;1152&#34; /&gt;&lt;/p&gt;
+&lt;div class=&#34;figure&#34;&gt;
+&lt;img src=&#34;/img/policeShoot/map_county_rate_1366_768.png&#34; alt=&#34;Figure 2. Civilians Killed by Police per 100,000 Residents&#34; /&gt;
+&lt;p class=&#34;caption&#34;&gt;Figure 2. Civilians Killed by Police per 100,000 Residents&lt;/p&gt;
 &lt;/div&gt;
-&lt;div id=&#34;heatmap-of-rates---killed-civilians-per-100000---counties-with-populations-greater-10000&#34; class=&#34;section level3&#34;&gt;
-&lt;h3&gt;3. Heatmap of Rates - Killed Civilians per 100,000 - Counties with Populations Greater 10,000&lt;/h3&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2017-05-12-police-shooting-heat-maps-county-level_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;1152&#34; /&gt;&lt;/p&gt;
+&lt;div class=&#34;figure&#34;&gt;
+&lt;img src=&#34;/img/policeShoot/map_county_rate_1366_768.png&#34; alt=&#34;Figure 3. Killed by Police Rates for Larger Counties&#34; /&gt;
+&lt;p class=&#34;caption&#34;&gt;Figure 3. Killed by Police Rates for Larger Counties&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;r-code&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;R Code&lt;/h2&gt;
+&lt;div id=&#34;load-the-data.&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;1. Load the Data.&lt;/h3&gt;
+&lt;p&gt;(I plan to upload these data sets to figshare shortly.)&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(readr)
+library(tidyr)
+library(dplyr)
+
+
+vars &amp;lt;- fst::read.fst(path = &amp;quot;countyVars.csv&amp;quot;)
+df_wapoLott &amp;lt;- dplyr::left_join(vars, readr::read_csv(&amp;quot;killed_lott_wapo.csv&amp;quot;)) %&amp;gt;% 
+    dplyr::mutate_at(vars(contains(&amp;quot;killed&amp;quot;)), funs(replace(., is.na(.), 0))) %&amp;gt;% 
+    dplyr::mutate(killDummy = ifelse(killed == 0, &amp;quot;NO&amp;quot;, &amp;quot;YES&amp;quot;), killDummy = factor(killDummy), 
+        killRate = killed/pop.c.total_5yr, policeRatio = policeFullTime/pop.c.total_5yr, 
+        crowding_prcnt = log(crowding_prcnt + 1), bw_income_gap = medianIncome_black/medianIncome_white_nh, 
+        black_sq = (pop.c.black_5yr/pop.c.total_5yr)^2, pop = log(pop.c.total_5yr), 
+        pop.blackPrcnt_log = log(pop.c.black_5yr/pop.c.total_5yr), pop.c.hispanic_5yr = log(pop.c.hispanic_5yr/pop.c.total_5yr), 
+        pop.male.15_29_5yr = log(pop.male.15_29_5yr/pop.c.total_5yr))
+
+crimeRateVars &amp;lt;- c(&amp;quot;pc1Crime&amp;quot;, &amp;quot;pc2Crime&amp;quot;, &amp;quot;pc1Crime_3&amp;quot;, &amp;quot;pc2Crime_3&amp;quot;, &amp;quot;murder_r_4yr&amp;quot;, 
+    &amp;quot;dui_r_4yr&amp;quot;, &amp;quot;drug_poss_r_4yr&amp;quot;, &amp;quot;vc_r_4yr&amp;quot;, &amp;quot;theft_r_4yr&amp;quot;, &amp;quot;vandal_r_4yr&amp;quot;)
+
+crimeCountVars &amp;lt;- c(&amp;quot;murder_4yr&amp;quot;, &amp;quot;dui_4yr&amp;quot;, &amp;quot;drug_poss_4yr&amp;quot;, &amp;quot;vc_4yr&amp;quot;, &amp;quot;theft_4yr&amp;quot;, 
+    &amp;quot;vandal_4yr&amp;quot;)
+
+sesVars &amp;lt;- c(&amp;quot;medianIncome&amp;quot;, &amp;quot;bw_income_gap&amp;quot;, &amp;quot;gini&amp;quot;, &amp;quot;unemploymentRate_5yr&amp;quot;, 
+    &amp;quot;singleParent_prcnt&amp;quot;, &amp;quot;poverty&amp;quot;, &amp;quot;sesall&amp;quot;, &amp;quot;pc1SES&amp;quot;, &amp;quot;pc2SES&amp;quot;, &amp;quot;highschoolDropOut&amp;quot;, 
+    &amp;quot;ELA_6thgrade&amp;quot;, &amp;quot;MATH_6thgrade&amp;quot;, &amp;quot;residential_segregation_black_white&amp;quot;, 
+    &amp;quot;theil_whiteBlack&amp;quot;)
+
+popVars &amp;lt;- c(&amp;quot;FIPS&amp;quot;, &amp;quot;pop&amp;quot;, &amp;quot;pop.c.total_5yr&amp;quot;, &amp;quot;pop.blackPrcnt_log&amp;quot;, &amp;quot;pop.c.black_5yr&amp;quot;, 
+    &amp;quot;black_sq&amp;quot;, &amp;quot;pop.c.black_change&amp;quot;, &amp;quot;pop.c.hispanic_5yr&amp;quot;, &amp;quot;pop.male.15_29_5yr&amp;quot;, 
+    &amp;quot;policePrcntBlack&amp;quot;, &amp;quot;policeRatio&amp;quot;, &amp;quot;policeFullTime_log&amp;quot;, &amp;quot;policeFullTime&amp;quot;, 
+    &amp;quot;crowding_prcnt&amp;quot;)
+
+depVars &amp;lt;- c(&amp;quot;killRate&amp;quot;, &amp;quot;killed&amp;quot;, &amp;quot;killDummy&amp;quot;)
+allVars &amp;lt;- c(depVars, crimeRateVars, crimeCountVars, sesVars, popVars)
+df_all &amp;lt;- df_wapoLott[, allVars]&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;figure-1.&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Figure 1.&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(choroplethr)
+library(ggplot2)
+library(ggthemes)
+library(choroplethrMaps)
+library(RColorBrewer)
+library(ggsci)
+
+df &amp;lt;- df_all
+
+data(state.map)
+data(county.map)
+df$value &amp;lt;- df$killed #set some variable to &amp;#39;value&amp;#39; - can reset later
+df$region &amp;lt;- as.numeric(substr(df$FIPS, start=2, stop=6))
+
+mycolors &amp;lt;- ggsci::pal_d3(palette = &amp;quot;category10&amp;quot;)
+nColors &amp;lt;- mycolors(n=4)
+nColors &amp;lt;- c( &amp;quot;ivory&amp;quot;, &amp;quot;cyan&amp;quot;, nColors)
+sc &amp;lt;- scale_fill_gradientn(colours = nColors, 
+                           limits=c(0,1,10,20,30,50,100,200))
+
+df$value&amp;lt;- cut(df$killed, 
+               breaks=c(-1,0,1,10,50,100,200),
+               labels=c(&amp;quot;None&amp;quot;, &amp;quot;1&amp;quot;, &amp;quot;2-10&amp;quot;, &amp;quot;11-50&amp;quot;, &amp;quot;51-100&amp;quot;,
+                        &amp;quot;&amp;gt; 100&amp;quot;)
+               )
+
+##To get Alaska and Hawaii to show up correctly...
+#see http://stackoverflow.com/questions/38938565/alaska-and-hawaii-not-formatting-correctly-for-county-choropleth-map-in-r
+
+choro = CountyChoropleth$new(df[which(!is.na(df$value)),])
+choro$ggplot_scale = scale_fill_manual(values=nColors, 
+                      labels=c(&amp;quot;None&amp;quot;, &amp;quot;1&amp;quot;, &amp;quot;2-10&amp;quot;, &amp;quot;11-50&amp;quot;, &amp;quot;51-100&amp;quot;,&amp;quot;&amp;gt; 100&amp;quot;),
+                     na.value= &amp;quot;ivory&amp;quot;
+                      )
+newdf &amp;lt;- choro$render()
+newdf$data$value[which(is.na(newdf$data$value))] &amp;lt;- &amp;quot;None&amp;quot;
+
+
+sum_df &amp;lt;- newdf$data[] %&amp;gt;% 
+  tibble::as_tibble() %&amp;gt;% 
+  group_by(region) %&amp;gt;% 
+  dplyr::summarise(
+    name = first(NAME),
+    long_av = mean(long),
+    lat_av = mean(lat)
+  )
+
+df &amp;lt;- dplyr::left_join(df, sum_df)
+df$popLabel &amp;lt;- paste0(round(df$pop.c.total_5yr/1e06,2), &amp;quot;M&amp;quot;)
+
+newdf +
+  theme_minimal() +
+  guides(fill=guide_legend(title = &amp;quot;Civilians Killed&amp;quot;)) +
+  scale_fill_manual(values=nColors, 
+                    breaks = c(&amp;quot;1&amp;quot;, &amp;quot;2-10&amp;quot;, &amp;quot;11-50&amp;quot;, &amp;quot;51-100&amp;quot;,
+                               &amp;quot;&amp;gt; 100&amp;quot;)) +
+  ggrepel::geom_label_repel(data= filter(df, killed &amp;gt; 50),
+            aes(label= paste0(name, &amp;quot; County&amp;quot;,
+                              &amp;quot;\n(n=&amp;quot;, killed, 
+                              &amp;quot;, pop. &amp;quot;, popLabel,
+                              &amp;quot;)&amp;quot;),
+                             x=long_av, y=lat_av, 
+                group=region), 
+            
+            min.segment.length = unit(0.1, &amp;quot;lines&amp;quot;),
+            size=3, 
+            nudge_x = .75, nudge_y = -.5, fontface=&amp;quot;bold&amp;quot;,
+            lineheight=.85, 
+            fill=&amp;quot;white&amp;quot;, alpha=0.9) +
+  theme(legend.position = c(0.9, 0.2),
+        legend.title = element_text(face=&amp;quot;bold&amp;quot;),
+        text = element_text(face=&amp;quot;bold&amp;quot;),
+        axis.text.x=element_blank(),
+        axis.text.y=element_blank()
+  ) +
+  xlab(&amp;quot;&amp;quot;) +
+  ylab(&amp;quot;&amp;quot;) +
+ggtitle(label=&amp;quot;Civilians Killed by Police per County (2013-2016)&amp;quot;, 
+        subtitle = &amp;quot;Data from Lott &amp;amp; Moody (2013-2015) and Washington Post (2016).\nSource: johnbradford.github.io&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;figure-2.&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Figure 2.&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(choroplethr)
+library(ggplot2)
+library(ggthemes)
+library(choroplethrMaps)
+library(RColorBrewer)
+library(ggsci)
+
+df &amp;lt;- df_all
+
+data(state.map)
+data(county.map)
+df$value &amp;lt;- df$killRate #set some variable to &amp;#39;value&amp;#39; - can reset later
+df$region &amp;lt;- as.numeric(substr(df$FIPS, start=2, stop=6))
+
+mycolors &amp;lt;- ggsci::pal_d3(palette = &amp;quot;category10&amp;quot;)
+nColors &amp;lt;- mycolors(n=4)
+nColors &amp;lt;- c( &amp;quot;ivory&amp;quot;, &amp;quot;cyan&amp;quot;, nColors)
+#c(&amp;quot;antiquewhite&amp;quot;, &amp;quot;beige&amp;quot;, &amp;quot;ghostwhite&amp;quot;, &amp;quot;floralwhite&amp;quot;, &amp;quot;ivory&amp;quot;)
+
+df$value&amp;lt;- cut(1e05*df$killRate, 
+               breaks=c(-1,0,1,10,25,50,100),
+               labels=c(&amp;quot;None&amp;quot;, &amp;quot;Less than 1&amp;quot;, &amp;quot;1-10&amp;quot;, &amp;quot;10-25&amp;quot;, &amp;quot;25-50&amp;quot;, &amp;quot;&amp;gt; 50&amp;quot;)
+)
+
+#Map
+
+
+choro = CountyChoropleth$new(df[which(!is.na(df$value)),])
+choro$ggplot_scale = scale_fill_manual(values=nColors, 
+                                       labels=c(&amp;quot;None&amp;quot;, &amp;quot;Less than 1&amp;quot;, &amp;quot;1-25&amp;quot;, &amp;quot;25-50&amp;quot;, &amp;quot;&amp;gt; 50&amp;quot;),
+                                       na.value= &amp;quot;ivory&amp;quot;
+)
+newdf &amp;lt;- choro$render()
+newdf$data$value[which(is.na(newdf$data$value))] &amp;lt;- &amp;quot;None&amp;quot;
+
+
+sum_df &amp;lt;- newdf$data[] %&amp;gt;% 
+  tibble::as_tibble() %&amp;gt;% 
+  group_by(region) %&amp;gt;% 
+  dplyr::summarise(
+    name = first(NAME),
+    long_av = mean(long),
+    lat_av = mean(lat)
+  )
+
+df &amp;lt;- dplyr::left_join(df, sum_df)
+df$rateLabel &amp;lt;- round(1e05*df$killRate)
+
+newdf +
+  theme_minimal() +
+  guides(fill=guide_legend(title = &amp;quot;Civilians Killed per 100,000&amp;quot;)) +
+  scale_fill_manual(values=nColors, 
+                    breaks = c(&amp;quot;Less than 1&amp;quot;, &amp;quot;1-10&amp;quot;, &amp;quot;10-25&amp;quot;, &amp;quot;25-50&amp;quot;, &amp;quot;&amp;gt; 50&amp;quot;)) +
+  ggrepel::geom_label_repel(data= filter(df, 1e05*killRate &amp;gt; 50),
+                           aes(label= paste0(name, &amp;quot; County&amp;quot;, &amp;quot;\n&amp;quot;, rateLabel, &amp;quot; per 100k&amp;quot;,
+                                             &amp;quot;\n(n=&amp;quot;, killed, 
+                                             &amp;quot;, pop. &amp;quot;, round(pop.c.total_5yr),
+                                             &amp;quot;)&amp;quot;),
+                               x=long_av, y=lat_av,  group=region),
+                           min.segment.length = unit(0.1, &amp;quot;lines&amp;quot;),
+                           size=3, nudge_x = .75, nudge_y = -.5, fontface=&amp;quot;bold&amp;quot;,
+                           lineheight=.85, 
+                           fill=&amp;quot;white&amp;quot;, alpha=0.9
+                           
+                           ) +
+  theme(legend.position = c(0.9, 0.2),
+        legend.title = element_text(face=&amp;quot;bold&amp;quot;),
+        text = element_text(face=&amp;quot;bold&amp;quot;),
+        axis.text.x=element_blank(),
+        axis.text.y=element_blank()
+  ) +
+  xlab(&amp;quot;&amp;quot;) +
+  ylab(&amp;quot;&amp;quot;) +
+ggtitle(label=&amp;quot;Civilians Killed by Police per 100,000 Residents (2013-2016)&amp;quot;, 
+        subtitle = &amp;quot;Data from Lott &amp;amp; Moody (2013-2015), Washington Post (2016), and US Census 5-year county population averages (2011-2015).\nSource: johnbradford.github.io&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;figure-3.&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Figure 3.&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(choroplethr)
+library(ggplot2)
+library(ggthemes)
+library(choroplethrMaps)
+library(RColorBrewer)
+library(ggsci)
+
+df &amp;lt;- df_all
+
+data(state.map)
+data(county.map)
+df$value &amp;lt;- df$killRate  #set some variable to &amp;#39;value&amp;#39; - can reset later
+df$region &amp;lt;- as.numeric(substr(df$FIPS, start = 2, stop = 6))
+
+mycolors &amp;lt;- ggsci::pal_d3(palette = &amp;quot;category10&amp;quot;)
+nColors &amp;lt;- mycolors(n = 4)
+nColors &amp;lt;- c(&amp;quot;ivory&amp;quot;, &amp;quot;cyan&amp;quot;, nColors)
+
+
+df$value &amp;lt;- cut(1e+05 * df$killRate, breaks = c(-1, 0, 1, 10, 25, 50, 100), 
+    labels = c(&amp;quot;None&amp;quot;, &amp;quot;Less than 1&amp;quot;, &amp;quot;1-10&amp;quot;, &amp;quot;10-25&amp;quot;, &amp;quot;25-50&amp;quot;, &amp;quot;&amp;gt; 50&amp;quot;))
+
+# Map
+
+
+choro = CountyChoropleth$new(df[which(!is.na(df$value)), ])
+choro$ggplot_scale = scale_fill_manual(values = nColors, labels = c(&amp;quot;None&amp;quot;, 
+    &amp;quot;Less than 1&amp;quot;, &amp;quot;1-25&amp;quot;, &amp;quot;25-50&amp;quot;, &amp;quot;&amp;gt; 50&amp;quot;), na.value = &amp;quot;ivory&amp;quot;)
+newdf &amp;lt;- choro$render()
+newdf$data$value[which(is.na(newdf$data$value))] &amp;lt;- &amp;quot;None&amp;quot;
+
+sum_df &amp;lt;- newdf$data[] %&amp;gt;% tibble::as_tibble() %&amp;gt;% group_by(region) %&amp;gt;% dplyr::summarise(name = first(NAME), 
+    long_av = mean(long), lat_av = mean(lat))
+
+df &amp;lt;- dplyr::left_join(df, sum_df)
+df$rateLabel &amp;lt;- round(1e+05 * df$killRate)
+
+newdf + theme_minimal() + guides(fill = guide_legend(title = &amp;quot;Civilians Killed per 100,000&amp;quot;)) + 
+    scale_fill_manual(values = nColors, breaks = c(&amp;quot;Less than 1&amp;quot;, &amp;quot;1-10&amp;quot;, &amp;quot;10-25&amp;quot;, 
+        &amp;quot;25-50&amp;quot;, &amp;quot;&amp;gt; 50&amp;quot;)) + 
+
+ggrepel::geom_label_repel(data = dplyr::filter(df, 1e+05 * killRate &amp;gt; 10, pop.c.total_5yr &amp;gt; 
+    10000), aes(label = paste0(name, &amp;quot; County&amp;quot;, &amp;quot;\n&amp;quot;, rateLabel, &amp;quot; per 100k&amp;quot;, 
+    &amp;quot;\n(n=&amp;quot;, killed, &amp;quot;, pop. &amp;quot;, round(pop.c.total_5yr), &amp;quot;)&amp;quot;), x = long_av, y = lat_av, 
+    group = region), min.segment.length = unit(0.1, &amp;quot;lines&amp;quot;), size = 3, nudge_x = 0, 
+    nudge_y = -0.5, fontface = &amp;quot;bold&amp;quot;, lineheight = 0.85, fill = &amp;quot;white&amp;quot;, alpha = 0.9) + 
+    theme(legend.position = c(0.9, 0.2), legend.title = element_text(face = &amp;quot;bold&amp;quot;), 
+        text = element_text(face = &amp;quot;bold&amp;quot;), axis.text.x = element_blank(), axis.text.y = element_blank()) + 
+    xlab(&amp;quot;&amp;quot;) + ylab(&amp;quot;&amp;quot;) + ggtitle(label = &amp;quot;Killed by Police Rates (2013-2016) in Counties with at least 10,000 Residents&amp;quot;, 
+    subtitle = &amp;quot;Data from Lott &amp;amp; Moody (2013-2015), Washington Post (2016), and US Census 5-year county population averages (2011-2015).\nSource: johnbradford.github.io&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 &lt;/div&gt;
 </description>
     </item>
@@ -40,21 +294,6 @@
       <guid>/post/test-post/</guid>
       <description>&lt;p&gt;Scatterplot - Violent Crime &amp;amp; Population by Race: Police Killings vs No Police Killings of Civilians. (Washington Post)&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2017-05-07-test-post_files/figure-html/unnamed-chunk-2-1.png&#34; width=&#34;864&#34; /&gt;&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Steps to Edit Your R Blogdown Website on Github</title>
-      <link>/post/steps-to-edit-your-r-blogdown-website-on-github/</link>
-      <pubDate>Sun, 07 May 2017 00:00:00 +0000</pubDate>
-      
-      <guid>/post/steps-to-edit-your-r-blogdown-website-on-github/</guid>
-      <description>&lt;p&gt;There is probably a more efficient way to implement these changes, but for now, the following works when updating your github page using the blogdown R package:&lt;/p&gt;
-&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
-&lt;li&gt;Create/Edit the files in source directory (e.g. in RStudio or Windows)&lt;/li&gt;
-&lt;li&gt;In RStudio, run blogdown::serve_site() or from ‘Addins’ menu. This updates the public folder.&lt;/li&gt;
-&lt;li&gt;Within bash shell of public repository folder, stage, commit, and push to github.&lt;/li&gt;
-&lt;/ol&gt;
 </description>
     </item>
     

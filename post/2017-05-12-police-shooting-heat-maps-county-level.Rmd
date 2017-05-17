@@ -11,16 +11,29 @@ tags:
   - Officer-involved shootings
 ---
 
-Below I combine the Lott & Moody (2016) data set covering 2013 to 2015 and the Washington Post data for 2016.  
+ Below are some new county-level heat maps of police shooting data, compiled from the Lott & Moody (2016) data for years 2013-2015, and the Washington Post for 2016.  Below the graphs, the R code is provided.
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
+![Figure 1.  Frequency of Civilians Killed by Police per County](/img/policeShoot/map_county_frequency_1366_768.png)
+
+
+![Figure 2.  Civilians Killed by Police per 100,000 Residents](/img/policeShoot/map_county_rate_1366_768.png)
+
+![Figure 3.  Killed by Police Rates for Larger Counties](/img/policeShoot/map_county_rate_1366_768.png)
+
+
+## R Code
+
+###1.  Load the Data. 
+(I plan to upload these data sets to figshare shortly.)
+
+```{r, tidy=TRUE, warning=FALSE, message=FALSE, eval=FALSE}
 library(readr)
 library(tidyr)
 library(dplyr)
 
 
-vars <- fst::read.fst(path="C:/Users/ssfaculty/Dropbox/R/policeShooting/countyVars.csv")
-df_wapoLott <- dplyr::left_join(vars, readr::read_csv("C:/Users/ssfaculty/Dropbox/R/policeShooting/killed_lott_wapo.csv")) %>% 
+vars <- fst::read.fst(path="countyVars.csv")
+df_wapoLott <- dplyr::left_join(vars, readr::read_csv("killed_lott_wapo.csv")) %>% 
   dplyr::mutate_at(vars(contains("killed")), funs(replace(., is.na(.), 0))) %>% 
   dplyr::mutate(
     killDummy = ifelse(killed==0, "NO", "YES"),
@@ -63,9 +76,9 @@ df_all <- df_wapoLott[,allVars]
 
 
 
-###1.  Heatmap of Count Data
+###Figure 1.
 
-```{r, echo=FALSE, fig.width=12, warning=FALSE, message=FALSE}
+```{r, tidyr=TRUE, fig.width=12, warning=FALSE, message=FALSE, eval=FALSE}
 library(choroplethr)
 library(ggplot2)
 library(ggthemes)
@@ -86,12 +99,7 @@ nColors <- c( "ivory", "cyan", nColors)
 sc <- scale_fill_gradientn(colours = nColors, 
                            limits=c(0,1,10,20,30,50,100,200))
 
-#df$value[which(df$value==0)] <- NA
-
 df$value<- cut(df$killed, 
-               # breaks=c(0,1,10,20,30,53,54,84,194),
-               # labels=c("1", "2-10", "11-20", "21-30",
-               #          "31-50", "54", "84", "194")
                breaks=c(-1,0,1,10,50,100,200),
                labels=c("None", "1", "2-10", "11-50", "51-100",
                         "> 100")
@@ -101,16 +109,12 @@ df$value<- cut(df$killed,
 #see http://stackoverflow.com/questions/38938565/alaska-and-hawaii-not-formatting-correctly-for-county-choropleth-map-in-r
 
 choro = CountyChoropleth$new(df[which(!is.na(df$value)),])
-#choro$title = "Civilians Killed by Police (2013-2016)"
 choro$ggplot_scale = scale_fill_manual(values=nColors, 
                       labels=c("None", "1", "2-10", "11-50", "51-100","> 100"),
                      na.value= "ivory"
                       )
 newdf <- choro$render()
 newdf$data$value[which(is.na(newdf$data$value))] <- "None"
-
-
-#labelFIPS <- df$region[which(df$killed > 50)]
 
 
 sum_df <- newdf$data[] %>% 
@@ -129,7 +133,6 @@ newdf +
   theme_minimal() +
   guides(fill=guide_legend(title = "Civilians Killed")) +
   scale_fill_manual(values=nColors, 
-                    #labels=c("None", "1", "2-10", "11-50", "51-100", "> 100"), 
                     breaks = c("1", "2-10", "11-50", "51-100",
                                "> 100")) +
   ggrepel::geom_label_repel(data= filter(df, killed > 50),
@@ -153,22 +156,17 @@ newdf +
   ) +
   xlab("") +
   ylab("") +
-  ggtitle( "Civilians Killed by Police (2013-2016)",
-           subtitle = "2016 data from Washington Post; 2013-2015 data from Lott & Moody (2016)") +
-  geom_text(aes(label="johnbradford.github.io",
-                x=-110, y=22), 
-            nudge_x = -10, nudge_y =  0, 
-            size=3, fontface="bold")
-
+ggtitle(label="Civilians Killed by Police per County (2013-2016)", 
+        subtitle = "Data from Lott & Moody (2013-2015) and Washington Post (2016).\nSource: johnbradford.github.io")
 
 
 
 ```
 
 
-###2.  Heatmap of Rates - Killed Civilians per 100,000
+###Figure 2.
 
-```{r, echo=FALSE, fig.width=12, warning=FALSE, message=FALSE}
+```{r, tidy=TRUE, fig.width=12, warning=FALSE, message=FALSE, eval=FALSE}
 library(choroplethr)
 library(ggplot2)
 library(ggthemes)
@@ -189,9 +187,6 @@ nColors <- c( "ivory", "cyan", nColors)
 #c("antiquewhite", "beige", "ghostwhite", "floralwhite", "ivory")
 
 df$value<- cut(1e05*df$killRate, 
-               # breaks=c(0,1,10,20,30,53,54,84,194),
-               # labels=c("1", "2-10", "11-20", "21-30",
-               #          "31-50", "54", "84", "194")
                breaks=c(-1,0,1,10,25,50,100),
                labels=c("None", "Less than 1", "1-10", "10-25", "25-50", "> 50")
 )
@@ -245,19 +240,15 @@ newdf +
   ) +
   xlab("") +
   ylab("") +
-   ggtitle( "Civilians Killed by Police per 100,000 Residents (2013-2016)",
-           subtitle = "2016 data from Washington Post; 2013-2015 data from Lott & Moody (2016)") +
-  geom_text(aes(label="johnbradford.github.io",
-                x=-110, y=22), 
-            nudge_x = -10, nudge_y =  0, 
-            size=3, fontface="bold")
+ggtitle(label="Civilians Killed by Police per 100,000 Residents (2013-2016)", 
+        subtitle = "Data from Lott & Moody (2013-2015), Washington Post (2016), and US Census 5-year county population averages (2011-2015).\nSource: johnbradford.github.io")
 
 ```
 
 
-###3.  Heatmap of Rates - Killed Civilians per 100,000 - Counties with Populations Greater 10,000
+###Figure 3.
 
-```{r, echo=FALSE, fig.width=12, warning=FALSE, message=FALSE}
+```{r, tidy=TRUE, fig.width=12, warning=FALSE, message=FALSE, eval=FALSE}
 library(choroplethr)
 library(ggplot2)
 library(ggthemes)
@@ -275,7 +266,7 @@ df$region <- as.numeric(substr(df$FIPS, start=2, stop=6))
 mycolors <- ggsci::pal_d3(palette = "category10")
 nColors <- mycolors(n=4)
 nColors <- c( "ivory", "cyan", nColors)
-#c("antiquewhite", "beige", "ghostwhite", "floralwhite", "ivory")
+
 
 df$value<- cut(1e05*df$killRate, 
                breaks=c(-1,0,1,10,25,50,100),
@@ -286,7 +277,6 @@ df$value<- cut(1e05*df$killRate,
 
 
 choro = CountyChoropleth$new(df[which(!is.na(df$value)),])
-#choro$title = "Civilians Killed by Police per 100,000 Residents (2013-2016)"
 choro$ggplot_scale = scale_fill_manual(values=nColors, 
                                        labels=c("None", "Less than 1", "1-25", "25-50", "> 50"),
                                        na.value= "ivory"
@@ -332,12 +322,8 @@ newdf +
   ) +
   xlab("") +
   ylab("") +
-  ggtitle("Civilians Killed by Police per 100,000 Residents (2013-2016)", 
-          subtitle = "Labels included for counties with at least 10,000 residents and 10-25 civilian deaths per 100k") +
-    geom_text(aes(label="johnbradford.github.io",
-                x=-110, y=22), 
-            nudge_x = -10, nudge_y =  0, 
-            size=3, fontface="bold")
+ggtitle(label="Killed by Police Rates (2013-2016) in Counties with at least 10,000 Residents", 
+        subtitle = "Data from Lott & Moody (2013-2015), Washington Post (2016), and US Census 5-year county population averages (2011-2015).\nSource: johnbradford.github.io")
 
 
 
