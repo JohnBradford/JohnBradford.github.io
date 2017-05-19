@@ -1,0 +1,214 @@
+---
+title: A question about a new article on police shootings
+author: John Hamilton Bradford
+date: '2017-05-19'
+slug: a-question-about-a-new-article-on-police-shootings
+categories: []
+tags:
+  - Officer-involved shootings
+  - Police-involved fatalities
+  - police shooting
+  - Police use of force
+---
+
+A new article has just been published in the *Journal of Criminal Justice*, ["The prevalence of fatal police shootings by U.S. police, 2015–2016: Patterns and answers from a new data set" by Shane, Lawton, and Swenson (2017)](http://www.sciencedirect.com/science/article/pii/S0047235217301344) .  
+
+The authors make some good points that I mostly agree with, but I cannot make sense of their finding that the mean rate of black civilians killed by police (per 100,000) is lower than that of whites.  The finding is reported in Table 3 and in the discussion of their descriptive statistics:
+
+>"The mean rate for Blacks was lower than for Whites, Hispanics (p < 0.000) and Native Americans (p < 0.002), but was not different for Asians and others"  (3)
+
+>"The mean rate of fatalities for Whites (M =0.741) is significantly lower than for Hispanics (M = 0.897; p < 0.000) and Native Americans (M = 1.106; p < 0.005), but is higher than for Blacks (M=0.633; p < 0.000)."  (5)
+
+Their data come from the Washington Post and covers 2015-2016.  They aggregate deaths by state and calculate the "mean fatality rate per 100,000 population (based on 2016 U.S. Census Bureau state
+populations)."  
+
+From everything I've read and the data I've examined, when normalized by *race-specific*  population, the black rate of police shooting deaths is higher than that for whites, at the *aggregate national level*.  You can look at this data yourself with an online R Shiny App I created here:
+
+[https://johnbradford.shinyapps.io/policeshooting/]( https://johnbradford.shinyapps.io/policeshooting/)
+
+So I decided to examine the Washington Post data again, calculating the fatality rate for each racial group for each state.  The code and results are posted below.
+
+###I.  Load Washington Post Data.
+First, we have to load the necessary R packages and Washington Post data.
+```{r, tidy=TRUE, warning=FALSE, message=FALSE}
+
+
+library(dplyr)
+library(readr)
+
+wapo <- read_csv("https://cdn.rawgit.com/washingtonpost/data-police-shootings/master/fatal-police-shootings-data.csv") %>% 
+  
+  dplyr::transmute(Race=race,
+    Race=replace(Race, which(Race=="W"), "White"),
+    Race=replace(Race, which(Race=="B"), "Black"),
+    Race=replace(Race, which(Race=="H"), "Hispanic"),
+    Race=replace(Race, which(Race=="A"), "Asian"),
+    Race=replace(Race, which(Race=="N"), "Native American"),
+    Race=replace(Race, which(Race=="O"), "Other"),
+    #year=as.numeric(format(date,"%Y")),
+    #gender=replace(gender, which(gender=="M"), "Male"),
+    #gender=replace(gender, which(gender=="F"), "Female"),
+    State = state) %>% 
+  ##Sum across years for state for each race
+  dplyr::group_by(State) %>% 
+  dplyr::summarise(
+    killed.White = length(which(Race == "White")),
+    killed.Black = length(which(Race == "Black")),
+    killed.Hispanic = length(which(Race == "Hispanic")),
+    killed.Asian = length(which(Race == "Asian")),
+    killed.NativeAmerican = length(which(Race == "Native American")),
+    killed.Total = n() )
+
+tibble::as_tibble(wapo)
+
+```
+
+
+###II. Load Census Data
+Next, we have to load the state-level population data by race.  They use 2016 Census data, but we should get similar results from the 2015 Census Data, which would just as legitimate anyway since the Wasghinton Post data covers 2015 and 2016.  The census data can be retrieved online:
+
+[State Characteristics Datasets: Annual State Resident Population Estimates for 5 Race Groups (5 Race Alone or in Combination Groups) by Age, Sex, and Hispanic Origin: April 1, 2010 to July 1, 2015](https://www2.census.gov/programs-surveys/popest/datasets/2010-2015/state/asrh/sc-est2015-alldata5.csv)
+
+Using this data, you can also normalize by gender, age, and race and their cross-tabulations.  Below I only examine race.  The state names also have to be abbreviated to match the Washington Post data.
+
+```{r, tidy=TRUE, warning=FALSE, message=FALSE}
+library(dplyr)
+library(tidyr)
+library(readr)
+
+census_state <- read_csv("https://www2.census.gov/programs-surveys/popest/datasets/2010-2015/state/asrh/sc-est2015-alldata5.csv") %>%  
+  ##filtering to include both males and females
+  dplyr::filter(SEX == 0) %>% 
+  ##selecting only 2015 data, renaming the columns  
+  dplyr::transmute(State=NAME, 
+                   Hisp=ORIGIN, 
+                   Race=RACE, 
+                   AGE=AGE,
+                   population=POPESTIMATE2015) %>% 
+  ##Creating Race categories - "Hispanics" are Hispanic Whites.  But the results are roughly the same if you include hispanic blacks, asians, etc. since there are so few of them.  I'm also combining Asians and PAcific Islanders since they are not distinguished in the WaPo data.
+  dplyr::mutate(
+    State = state.abb[match(State,state.name)],
+    Race=replace(Race, which(Race==1 & Hisp==1), "White"),
+    Race=replace(Race, which(Race==1 & Hisp==2), "Hispanic"),
+    Race=replace(Race, which(Race==2 & Hisp==0), "Black"),
+    Race=replace(Race, which(Race==3 & Hisp==0), "Native American"),
+    Race=replace(Race, which(Race==4 & Hisp==0), "Asian"),
+    Race=replace(Race, which(Race==5 & Hisp==0), "Asian")
+  ) %>% 
+  dplyr::select(-c(Hisp)) %>% 
+  dplyr::filter(Race %in% c("White", "Hispanic", "Black","Asian",
+                     "Native American")) %>% 
+  dplyr::group_by(State, Race) %>% 
+  ##Summing across all ages each race within each state
+  dplyr::summarise(population=sum(population, na.rm=T)) %>% 
+  tidyr::spread(Race, population) %>% 
+  ##Creating a 'Total' population category
+  dplyr::mutate(Total = White + Hispanic + Black + Asian + `Native American`)
+
+tibble::as_tibble(census_state)
+
+```
+
+
+###III.  Combine Data and Calculate Rates per 100,000 Population
+
+```{r, tidy=TRUE, warning=FALSE, message=FALSE}
+
+wapoRates <- dplyr::left_join(wapo, census_state) %>% 
+  dplyr::group_by(State) %>% 
+  dplyr::transmute(
+    Total = 1e05*killed.Total / Total,
+    White = 1e05*killed.White / White,
+    Black = 1e05*killed.Black / Black,
+    Hispanic = 1e05*killed.Hispanic / Hispanic,
+    `Native American` = 1e05*killed.NativeAmerican / `Native American`,
+    Asian = 1e05*killed.Asian / Asian
+  ) 
+
+tibble::as_tibble(wapoRates)
+
+```
+
+###IV.  Calculate Means of State Rates for each Race
+```{r, tidy=TRUE, warning=FALSE, message=FALSE}
+
+wapoRates_sum <- wapoRates %>% 
+  dplyr::ungroup() %>% 
+  dplyr::select(-State) %>% 
+  dplyr::summarise_all(mean, na.rm=T) %>% 
+  tidyr::gather(Race, `Mean Killed Rate`, 1:6) %>% 
+  dplyr::arrange(desc(`Mean Killed Rate`))
+
+tibble::as_tibble(wapoRates_sum)
+
+```
+
+As shown above, the Black Rate is higher.  Next, I'll plot the results.  Note that Washington D.c. Results are not included.  I've calculated this elsewhere and it doesn't much change the results.  
+
+###V.  Graph the results.
+```{r, tidy=TRUE, warning=FALSE, message=FALSE, fig.width=11}
+
+
+library(ggplot2)
+library(ggsci)
+library(ggthemes)
+library(ggrepel)
+
+##First change to long form
+wapoRates_L <- wapoRates %>% 
+  dplyr::group_by(State) %>% 
+  tidyr::gather(Race, KilledR, 2:7 ) %>% 
+  dplyr::ungroup() %>% 
+  dplyr::filter(!is.na(Race)) %>% 
+  dplyr::mutate(Race = factor(Race, levels=c(
+      "Total", "White", "Black",
+      "Hispanic", "Asian", "Native American"))) %>% 
+  dplyr::group_by(Race) %>% 
+  dplyr::mutate(KilledR_mean = mean(KilledR, na.rm=T))
+
+ggplot(data=wapoRates_L,
+       aes(x=Race, y=KilledR, color= Race, 
+           fill= Race, shape = Race)) +
+
+  geom_boxplot(alpha=.5 ,
+                position="dodge", color="black"
+                ) +
+  geom_dotplot(data=subset(wapoRates_L, KilledR>0), alpha=.5 ,
+                position="dodge", color="black",
+                binaxis='y', stackdir='centerwhole', dotsize=.75, binwidth=.1
+                ) +
+  xlab(label="") +
+  ylab(label="") +
+  geom_label(aes(x=Race, y=KilledR_mean,
+                 group=Race, 
+                 label=paste0(round(KilledR_mean,2))),  
+              size=3,
+              fill="lightgray", alpha=0.1, color="black",
+             position = position_dodge(width = .9)) +
+    ggsci::scale_fill_d3(palette="category10") +
+  ggsci::scale_color_d3(palette="category10") +
+  theme_gdocs() +
+    theme(text = element_text(size=12, face="bold"),
+        legend.position = c(.12,.9),
+      legend.text = element_text(size=12, face="bold"),
+      legend.background = element_rect(fill=alpha('gray', 0.2)),
+      axis.title.y = element_text(size=12),
+      axis.text = element_text(size=10)) +
+  guides(  size=FALSE,  stat=FALSE, fill=FALSE, shape=FALSE, color=FALSE
+           ) +
+  ggtitle(label="Race of Civilians Killed by Police per 100,000 Residents", 
+          subtitle = "State-Level Data from  Washington Post (2015-2016) & US Census (2015).\nSource: johnbradford.github.io") +
+  coord_cartesian(ylim=c(0,5)) +
+  ggrepel::geom_text_repel(data=subset(wapoRates_L, KilledR>2.5), 
+                           aes(x=Race, y=KilledR, label=State), color="black", size=3)
+
+
+
+```
+
+
+These results contravene these of Shane, Lawton, and Swenson (2017) and are well known. I thought that maybe they had calculated their mean fatality rate using *total population* rather than *race-specific population* as the denominator.  This seems doubtful.  Re-calculating using total population as the denominator, the White rate is higher than the black rate, but the results are still far off.  My results are 0.37 white killings per 100,000 people (of all races) and 0.14 killings of blacks per 100,000 people (of all races), rather than 0.74 and 0.63, respectively.  Moreover, I could not replicate the 'mean fatality base rate' of 0.897 for Hispanics.
+
+Was this a mistake on their part, or did I miss something?
+
+

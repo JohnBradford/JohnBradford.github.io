@@ -11,6 +11,199 @@
     <atom:link href="/post/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>A question about a new article on police shootings</title>
+      <link>/post/a-question-about-a-new-article-on-police-shootings/</link>
+      <pubDate>Fri, 19 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/post/a-question-about-a-new-article-on-police-shootings/</guid>
+      <description>&lt;p&gt;A new article has just been published in the &lt;em&gt;Journal of Criminal Justice&lt;/em&gt;, &lt;a href=&#34;http://www.sciencedirect.com/science/article/pii/S0047235217301344&#34;&gt;“The prevalence of fatal police shootings by U.S. police, 2015–2016: Patterns and answers from a new data set” by Shane, Lawton, and Swenson (2017)&lt;/a&gt; .&lt;/p&gt;
+&lt;p&gt;The authors make some good points that I mostly agree with, but I cannot make sense of their finding that the mean rate of black civilians killed by police (per 100,000) is lower than that of whites. The finding is reported in Table 3 and in the discussion of their descriptive statistics:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;“The mean rate for Blacks was lower than for Whites, Hispanics (p &amp;lt; 0.000) and Native Americans (p &amp;lt; 0.002), but was not different for Asians and others” (3)&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;“The mean rate of fatalities for Whites (M =0.741) is significantly lower than for Hispanics (M = 0.897; p &amp;lt; 0.000) and Native Americans (M = 1.106; p &amp;lt; 0.005), but is higher than for Blacks (M=0.633; p &amp;lt; 0.000).” (5)&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Their data come from the Washington Post and covers 2015-2016. They aggregate deaths by state and calculate the “mean fatality rate per 100,000 population (based on 2016 U.S. Census Bureau state populations).”&lt;/p&gt;
+&lt;p&gt;From everything I’ve read and the data I’ve examined, when normalized by &lt;em&gt;race-specific&lt;/em&gt; population, the black rate of police shooting deaths is higher than that for whites, at the &lt;em&gt;aggregate national level&lt;/em&gt;. You can look at this data yourself with an online R Shiny App I created here:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://johnbradford.shinyapps.io/policeshooting/&#34; class=&#34;uri&#34;&gt;https://johnbradford.shinyapps.io/policeshooting/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;So I decided to examine the Washington Post data again, calculating the fatality rate for each racial group for each state. The code and results are posted below.&lt;/p&gt;
+&lt;div id=&#34;i.-load-washington-post-data.&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;I. Load Washington Post Data.&lt;/h3&gt;
+&lt;p&gt;First, we have to load the necessary R packages and Washington Post data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(dplyr)
+library(readr)
+
+wapo &amp;lt;- read_csv(&amp;quot;https://cdn.rawgit.com/washingtonpost/data-police-shootings/master/fatal-police-shootings-data.csv&amp;quot;) %&amp;gt;% 
+  
+  dplyr::transmute(Race=race,
+    Race=replace(Race, which(Race==&amp;quot;W&amp;quot;), &amp;quot;White&amp;quot;),
+    Race=replace(Race, which(Race==&amp;quot;B&amp;quot;), &amp;quot;Black&amp;quot;),
+    Race=replace(Race, which(Race==&amp;quot;H&amp;quot;), &amp;quot;Hispanic&amp;quot;),
+    Race=replace(Race, which(Race==&amp;quot;A&amp;quot;), &amp;quot;Asian&amp;quot;),
+    Race=replace(Race, which(Race==&amp;quot;N&amp;quot;), &amp;quot;Native American&amp;quot;),
+    Race=replace(Race, which(Race==&amp;quot;O&amp;quot;), &amp;quot;Other&amp;quot;),
+    #year=as.numeric(format(date,&amp;quot;%Y&amp;quot;)),
+    #gender=replace(gender, which(gender==&amp;quot;M&amp;quot;), &amp;quot;Male&amp;quot;),
+    #gender=replace(gender, which(gender==&amp;quot;F&amp;quot;), &amp;quot;Female&amp;quot;),
+    State = state) %&amp;gt;% 
+  ##Sum across years for state for each race
+  dplyr::group_by(State) %&amp;gt;% 
+  dplyr::summarise(
+    killed.White = length(which(Race == &amp;quot;White&amp;quot;)),
+    killed.Black = length(which(Race == &amp;quot;Black&amp;quot;)),
+    killed.Hispanic = length(which(Race == &amp;quot;Hispanic&amp;quot;)),
+    killed.Asian = length(which(Race == &amp;quot;Asian&amp;quot;)),
+    killed.NativeAmerican = length(which(Race == &amp;quot;Native American&amp;quot;)),
+    killed.Total = n() )
+
+tibble::as_tibble(wapo)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 51 × 7
+##    State killed.White killed.Black killed.Hispanic killed.Asian
+##    &amp;lt;chr&amp;gt;        &amp;lt;int&amp;gt;        &amp;lt;int&amp;gt;           &amp;lt;int&amp;gt;        &amp;lt;int&amp;gt;
+## 1     AK            6            1               0            0
+## 2     AL           30           13               0            0
+## 3     AR           16            5               0            0
+## 4     AZ           49            4              33            0
+## 5     CA          116           65             156           15
+## 6     CO           30            8              20            2
+## 7     CT            5            0               2            0
+## 8     DC            1           10               0            0
+## 9     DE            4            4               0            0
+## 10    FL           66           48              17            1
+## # ... with 41 more rows, and 2 more variables:
+## #   killed.NativeAmerican &amp;lt;int&amp;gt;, killed.Total &amp;lt;int&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ii.-load-census-data&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;II. Load Census Data&lt;/h3&gt;
+&lt;p&gt;Next, we have to load the state-level population data by race. They use 2016 Census data, but we should get similar results from the 2015 Census Data, which would just as legitimate anyway since the Wasghinton Post data covers 2015 and 2016. The census data can be retrieved online:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www2.census.gov/programs-surveys/popest/datasets/2010-2015/state/asrh/sc-est2015-alldata5.csv&#34;&gt;State Characteristics Datasets: Annual State Resident Population Estimates for 5 Race Groups (5 Race Alone or in Combination Groups) by Age, Sex, and Hispanic Origin: April 1, 2010 to July 1, 2015&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Using this data, you can also normalize by gender, age, and race and their cross-tabulations. Below I only examine race. The state names also have to be abbreviated to match the Washington Post data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(dplyr)
+library(tidyr)
+library(readr)
+
+census_state &amp;lt;- read_csv(&amp;quot;https://www2.census.gov/programs-surveys/popest/datasets/2010-2015/state/asrh/sc-est2015-alldata5.csv&amp;quot;) %&amp;gt;% 
+    ## filtering to include both males and females
+dplyr::filter(SEX == 0) %&amp;gt;% ## selecting only 2015 data, renaming the columns
+dplyr::transmute(State = NAME, Hisp = ORIGIN, Race = RACE, AGE = AGE, population = POPESTIMATE2015) %&amp;gt;% 
+    ## Creating Race categories - &amp;#39;Hispanics&amp;#39; are Hispanic Whites.  But the
+## results are roughly the same if you include hispanic blacks, asians, etc.
+## since there are so few of them.  I&amp;#39;m also combining Asians and PAcific
+## Islanders since they are not distinguished in the WaPo data.
+dplyr::mutate(State = state.abb[match(State, state.name)], Race = replace(Race, 
+    which(Race == 1 &amp;amp; Hisp == 1), &amp;quot;White&amp;quot;), Race = replace(Race, which(Race == 
+    1 &amp;amp; Hisp == 2), &amp;quot;Hispanic&amp;quot;), Race = replace(Race, which(Race == 2 &amp;amp; Hisp == 
+    0), &amp;quot;Black&amp;quot;), Race = replace(Race, which(Race == 3 &amp;amp; Hisp == 0), &amp;quot;Native American&amp;quot;), 
+    Race = replace(Race, which(Race == 4 &amp;amp; Hisp == 0), &amp;quot;Asian&amp;quot;), Race = replace(Race, 
+        which(Race == 5 &amp;amp; Hisp == 0), &amp;quot;Asian&amp;quot;)) %&amp;gt;% dplyr::select(-c(Hisp)) %&amp;gt;% 
+    dplyr::filter(Race %in% c(&amp;quot;White&amp;quot;, &amp;quot;Hispanic&amp;quot;, &amp;quot;Black&amp;quot;, &amp;quot;Asian&amp;quot;, &amp;quot;Native American&amp;quot;)) %&amp;gt;% 
+    dplyr::group_by(State, Race) %&amp;gt;% ## Summing across all ages each race within each state
+dplyr::summarise(population = sum(population, na.rm = T)) %&amp;gt;% tidyr::spread(Race, 
+    population) %&amp;gt;% ## Creating a &amp;#39;Total&amp;#39; population category
+dplyr::mutate(Total = White + Hispanic + Black + Asian + `Native American`)
+
+tibble::as_tibble(census_state)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Source: local data frame [51 x 7]
+## Groups: State [51]
+## 
+##    State   Asian   Black Hispanic `Native American`    White    Total
+##    &amp;lt;chr&amp;gt;   &amp;lt;int&amp;gt;   &amp;lt;int&amp;gt;    &amp;lt;int&amp;gt;             &amp;lt;int&amp;gt;    &amp;lt;int&amp;gt;    &amp;lt;int&amp;gt;
+## 1     AK   74220   40105    41640            143826   496799   796590
+## 2     AL   92339 1338287   175866             66733  3268304  4941529
+## 3     AR   69177  490231   197047             58338  2226051  3040844
+## 4     AZ  331963  403715  1935766            429351  3930262  7031057
+## 5     CA 6869486 2989322 14040493           1078986 15788764 40767051
+## 6     CO  255130  304298  1068750            148150  3855642  5631970
+## 7     CT  197283  466878   473242             40962  2500213  3678578
+## 8     DE   44550  228005    70669             12698   615841   971763
+## 9     FL  766873 3642783  4622640            203379 11482439 20718114
+## 10    GA  491234 3364359   820463            112516  5650933 10439505
+## # ... with 41 more rows&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;iii.-combine-data-and-calculate-rates-per-100000-population&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;III. Combine Data and Calculate Rates per 100,000 Population&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;wapoRates &amp;lt;- dplyr::left_join(wapo, census_state) %&amp;gt;% dplyr::group_by(State) %&amp;gt;% 
+    dplyr::transmute(Total = 1e+05 * killed.Total/Total, White = 1e+05 * killed.White/White, 
+        Black = 1e+05 * killed.Black/Black, Hispanic = 1e+05 * killed.Hispanic/Hispanic, 
+        `Native American` = 1e+05 * killed.NativeAmerican/`Native American`, 
+        Asian = 1e+05 * killed.Asian/Asian)
+
+tibble::as_tibble(wapoRates)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Source: local data frame [51 x 7]
+## Groups: State [51]
+## 
+##    State     Total     White    Black  Hispanic `Native American`
+##    &amp;lt;chr&amp;gt;     &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;             &amp;lt;dbl&amp;gt;
+## 1     AK 1.6319562 1.2077319 2.493455 0.0000000        3.47642290
+## 2     AL 0.9308860 0.9179073 0.971391 0.0000000        0.00000000
+## 3     AR 0.8221402 0.7187616 1.019927 0.0000000        0.00000000
+## 4     AZ 1.4933743 1.2467362 0.990798 1.7047515        1.86327737
+## 5     CA 0.9640138 0.7346997 2.174406 1.1110721        0.09267961
+## 6     CO 1.1896370 0.7780805 2.629002 1.8713450        0.67499156
+## 7     CT 0.2446598 0.1999830 0.000000 0.4226168        0.00000000
+## 8     DC        NA        NA       NA        NA                NA
+## 9     DE 0.8232460 0.6495183 1.754347 0.0000000        0.00000000
+## 10    FL 0.6757372 0.5747908 1.317674 0.3677552        0.00000000
+## # ... with 41 more rows, and 1 more variables: Asian &amp;lt;dbl&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;iv.-calculate-means-of-state-rates-for-each-race&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;IV. Calculate Means of State Rates for each Race&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;wapoRates_sum &amp;lt;- wapoRates %&amp;gt;% dplyr::ungroup() %&amp;gt;% dplyr::select(-State) %&amp;gt;% 
+    dplyr::summarise_all(mean, na.rm = T) %&amp;gt;% tidyr::gather(Race, `Mean Killed Rate`, 
+    1:6) %&amp;gt;% dplyr::arrange(desc(`Mean Killed Rate`))
+
+tibble::as_tibble(wapoRates_sum)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 6 × 2
+##              Race `Mean Killed Rate`
+##             &amp;lt;chr&amp;gt;              &amp;lt;dbl&amp;gt;
+## 1           Black          1.3181650
+## 2           Total          0.7781821
+## 3 Native American          0.6613396
+## 4           White          0.6319581
+## 5        Hispanic          0.5486724
+## 6           Asian          0.2489872&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;As shown above, the Black Rate is higher. Next, I’ll plot the results. Note that Washington D.c. Results are not included. I’ve calculated this elsewhere and it doesn’t much change the results.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;v.-graph-the-results.&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;V. Graph the results.&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(ggplot2)
+library(ggsci)
+library(ggthemes)
+library(ggrepel)
+
+## First change to long form
+wapoRates_L &amp;lt;- wapoRates %&amp;gt;% dplyr::group_by(State) %&amp;gt;% tidyr::gather(Race, 
+    KilledR, 2:7) %&amp;gt;% dplyr::ungroup() %&amp;gt;% dplyr::filter(!is.na(Race)) %&amp;gt;% dplyr::mutate(Race = factor(Race, 
+    levels = c(&amp;quot;Total&amp;quot;, &amp;quot;White&amp;quot;, &amp;quot;Black&amp;quot;, &amp;quot;Hispanic&amp;quot;, &amp;quot;Asian&amp;quot;, &amp;quot;Native American&amp;quot;))) %&amp;gt;% 
+    dplyr::group_by(Race) %&amp;gt;% dplyr::mutate(KilledR_mean = mean(KilledR, na.rm = T))
+
+ggplot(data = wapoRates_L, aes(x = Race, y = KilledR, color = Race, fill = Race, 
+    shape = Race)) + 
+geom_boxplot(alpha = 0.5, position = &amp;quot;dodge&amp;quot;, color = &amp;quot;black&amp;quot;) + geom_dotplot(data = subset(wapoRates_L, 
+    KilledR &amp;gt; 0), alpha = 0.5, position = &amp;quot;dodge&amp;quot;, color = &amp;quot;black&amp;quot;, binaxis = &amp;quot;y&amp;quot;, 
+    stackdir = &amp;quot;centerwhole&amp;quot;, dotsize = 0.75, binwidth = 0.1) + xlab(label = &amp;quot;&amp;quot;) + 
+    ylab(label = &amp;quot;&amp;quot;) + geom_label(aes(x = Race, y = KilledR_mean, group = Race, 
+    label = paste0(round(KilledR_mean, 2))), size = 3, fill = &amp;quot;lightgray&amp;quot;, alpha = 0.1, 
+    color = &amp;quot;black&amp;quot;, position = position_dodge(width = 0.9)) + ggsci::scale_fill_d3(palette = &amp;quot;category10&amp;quot;) + 
+    ggsci::scale_color_d3(palette = &amp;quot;category10&amp;quot;) + theme_gdocs() + theme(text = element_text(size = 12, 
+    face = &amp;quot;bold&amp;quot;), legend.position = c(0.12, 0.9), legend.text = element_text(size = 12, 
+    face = &amp;quot;bold&amp;quot;), legend.background = element_rect(fill = alpha(&amp;quot;gray&amp;quot;, 0.2)), 
+    axis.title.y = element_text(size = 12), axis.text = element_text(size = 10)) + 
+    guides(size = FALSE, stat = FALSE, fill = FALSE, shape = FALSE, color = FALSE) + 
+    ggtitle(label = &amp;quot;Race of Civilians Killed by Police per 100,000 Residents&amp;quot;, 
+        subtitle = &amp;quot;State-Level Data from  Washington Post (2015-2016) &amp;amp; US Census (2015).\nSource: johnbradford.github.io&amp;quot;) + 
+    coord_cartesian(ylim = c(0, 5)) + ggrepel::geom_text_repel(data = subset(wapoRates_L, 
+    KilledR &amp;gt; 2.5), aes(x = Race, y = KilledR, label = State), color = &amp;quot;black&amp;quot;, 
+    size = 3)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-05-19-a-question-about-a-new-article-on-police-shootings_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;1056&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;These results contravene these of Shane, Lawton, and Swenson (2017) and are well known. I thought that maybe they had calculated their mean fatality rate using &lt;em&gt;total population&lt;/em&gt; rather than &lt;em&gt;race-specific population&lt;/em&gt; as the denominator. This seems doubtful. Re-calculating using total population as the denominator, the White rate is higher than the black rate, but the results are still far off. My results are 0.37 white killings per 100,000 people (of all races) and 0.14 killings of blacks per 100,000 people (of all races), rather than 0.74 and 0.63, respectively. Moreover, I could not replicate the ‘mean fatality base rate’ of 0.897 for Hispanics.&lt;/p&gt;
+&lt;p&gt;Was this a mistake on their part, or did I miss something?&lt;/p&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Police Shooting Heat Maps (County-Level)</title>
       <link>/post/police-shooting-heat-maps-county-level/</link>
       <pubDate>Fri, 12 May 2017 00:00:00 +0000</pubDate>
