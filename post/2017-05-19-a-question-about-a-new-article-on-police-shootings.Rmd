@@ -29,15 +29,32 @@ From everything I've read and the data I've examined, when normalized by *race-s
 So I decided to examine the Washington Post data again, calculating the fatality rate for each racial group for each state.  The code and results are posted below.
 
 ###I.  Load Washington Post Data.
-First, we have to load the necessary R packages and Washington Post data.
+First, we have to load the necessary R packages and Washington Post data.  I include at the beginning a function for returning state abbreviations from state names regardless of capitalization or punctuation.  I also filter to exclude cases after 2016.
+
 ```{r, tidy=TRUE, warning=FALSE, message=FALSE}
+
+getState.abb <- function(x){
+  ##remove punctuation and twim white space, convert to lower case
+  x <- tolower(trimws(gsub("[[:punct:]]", "", x)))
+  x[which(x == "washington dc")] <- "district of columbia"
+  
+  states.abb <- c(state.abb, "DC", "DC", "PR")
+  states.name <- c(state.name, "District of Columbia", "District of Columbia", "Puerto Rico")
+  
+  m.abb <- tolower(states.abb)
+  m.name <- tolower(gsub("[[:punct:]]", "", states.name))
+  
+    x[which(x %in% m.abb)] <- states.abb[match(x[which(x %in% m.abb)] ,m.abb)]
+    x[which(x %in% m.name)] <- states.abb[match(x[which(x %in% m.name)],m.name)]
+
+  return(x)
+}
 
 
 library(dplyr)
 library(readr)
 
 wapo <- read_csv("https://cdn.rawgit.com/washingtonpost/data-police-shootings/master/fatal-police-shootings-data.csv") %>% 
-  
   dplyr::transmute(Race=race,
     Race=replace(Race, which(Race=="W"), "White"),
     Race=replace(Race, which(Race=="B"), "Black"),
@@ -45,11 +62,10 @@ wapo <- read_csv("https://cdn.rawgit.com/washingtonpost/data-police-shootings/ma
     Race=replace(Race, which(Race=="A"), "Asian"),
     Race=replace(Race, which(Race=="N"), "Native American"),
     Race=replace(Race, which(Race=="O"), "Other"),
-    #year=as.numeric(format(date,"%Y")),
-    #gender=replace(gender, which(gender=="M"), "Male"),
-    #gender=replace(gender, which(gender=="F"), "Female"),
-    State = state) %>% 
+    year=as.numeric(format(date,"%Y")),
+    State = getState.abb(state)) %>% 
   ##Sum across years for state for each race
+  dplyr::filter(year < 2017) %>% 
   dplyr::group_by(State) %>% 
   dplyr::summarise(
     killed.White = length(which(Race == "White")),
@@ -59,7 +75,7 @@ wapo <- read_csv("https://cdn.rawgit.com/washingtonpost/data-police-shootings/ma
     killed.NativeAmerican = length(which(Race == "Native American")),
     killed.Total = n() )
 
-tibble::as_tibble(wapo)
+knitr::kable(wapo)
 
 ```
 
@@ -87,7 +103,7 @@ census_state <- read_csv("https://www2.census.gov/programs-surveys/popest/datase
                    population=POPESTIMATE2015) %>% 
   ##Creating Race categories - "Hispanics" are Hispanic Whites.  But the results are roughly the same if you include hispanic blacks, asians, etc. since there are so few of them.  I'm also combining Asians and PAcific Islanders since they are not distinguished in the WaPo data.
   dplyr::mutate(
-    State = state.abb[match(State,state.name)],
+    State = getState.abb(State),
     Race=replace(Race, which(Race==1 & Hisp==1), "White"),
     Race=replace(Race, which(Race==1 & Hisp==2), "Hispanic"),
     Race=replace(Race, which(Race==2 & Hisp==0), "Black"),
@@ -105,7 +121,7 @@ census_state <- read_csv("https://www2.census.gov/programs-surveys/popest/datase
   ##Creating a 'Total' population category
   dplyr::mutate(Total = White + Hispanic + Black + Asian + `Native American`)
 
-tibble::as_tibble(census_state)
+knitr::kable(census_state)
 
 ```
 
@@ -125,7 +141,7 @@ wapoRates <- dplyr::left_join(wapo, census_state) %>%
     Asian = 1e05*killed.Asian / Asian
   ) 
 
-tibble::as_tibble(wapoRates)
+knitr::kable(wapoRates)
 
 ```
 
@@ -139,7 +155,7 @@ wapoRates_sum <- wapoRates %>%
   tidyr::gather(Race, `Mean Killed Rate`, 1:6) %>% 
   dplyr::arrange(desc(`Mean Killed Rate`))
 
-tibble::as_tibble(wapoRates_sum)
+knitr::kable(wapoRates_sum)
 
 ```
 
@@ -207,7 +223,7 @@ ggplot(data=wapoRates_L,
 ```
 
 
-These results contravene these of Shane, Lawton, and Swenson (2017) and are well known. I thought that maybe they had calculated their mean fatality rate using *total population* rather than *race-specific population* as the denominator.  This seems doubtful.  Re-calculating using total population as the denominator, the White rate is higher than the black rate, but the results are still far off.  My results are 0.37 white killings per 100,000 people (of all races) and 0.14 killings of blacks per 100,000 people (of all races), rather than 0.74 and 0.63, respectively.  Moreover, I could not replicate the 'mean fatality base rate' of 0.897 for Hispanics.
+These results contravene those of Shane, Lawton, and Swenson (2017) and are well known. I thought that maybe they had calculated their mean fatality rate using *total population* rather than *race-specific population* as the denominator.  This seems doubtful.  Re-calculating using total population as the denominator, the White rate is higher than the black rate, but the results are still far off.  My results are 0.37 white killings per 100,000 people (of all races) and 0.14 killings of blacks per 100,000 people (of all races), rather than 0.74 and 0.63, respectively.  Moreover, I could not replicate the 'mean fatality base rate' of 0.897 for Hispanics.
 
 Was this a mistake on their part, or did I miss something?
 

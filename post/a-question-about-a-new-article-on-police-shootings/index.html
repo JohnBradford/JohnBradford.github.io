@@ -249,49 +249,516 @@
 <p>So I decided to examine the Washington Post data again, calculating the fatality rate for each racial group for each state. The code and results are posted below.</p>
 <div id="i.-load-washington-post-data." class="section level3">
 <h3>I. Load Washington Post Data.</h3>
-<p>First, we have to load the necessary R packages and Washington Post data.</p>
-<pre class="r"><code>library(dplyr)
+<p>First, we have to load the necessary R packages and Washington Post data. I include at the beginning a function for returning state abbreviations from state names regardless of capitalization or punctuation. I also filter to exclude cases after 2016.</p>
+<pre class="r"><code>getState.abb &lt;- function(x) {
+    ## remove punctuation and twim white space, convert to lower case
+    x &lt;- tolower(trimws(gsub(&quot;[[:punct:]]&quot;, &quot;&quot;, x)))
+    x[which(x == &quot;washington dc&quot;)] &lt;- &quot;district of columbia&quot;
+    
+    states.abb &lt;- c(state.abb, &quot;DC&quot;, &quot;DC&quot;, &quot;PR&quot;)
+    states.name &lt;- c(state.name, &quot;District of Columbia&quot;, &quot;District of Columbia&quot;, 
+        &quot;Puerto Rico&quot;)
+    
+    m.abb &lt;- tolower(states.abb)
+    m.name &lt;- tolower(gsub(&quot;[[:punct:]]&quot;, &quot;&quot;, states.name))
+    
+    x[which(x %in% m.abb)] &lt;- states.abb[match(x[which(x %in% m.abb)], m.abb)]
+    x[which(x %in% m.name)] &lt;- states.abb[match(x[which(x %in% m.name)], m.name)]
+    
+    return(x)
+}
+
+
+library(dplyr)
 library(readr)
 
 wapo &lt;- read_csv(&quot;https://cdn.rawgit.com/washingtonpost/data-police-shootings/master/fatal-police-shootings-data.csv&quot;) %&gt;% 
-  
-  dplyr::transmute(Race=race,
-    Race=replace(Race, which(Race==&quot;W&quot;), &quot;White&quot;),
-    Race=replace(Race, which(Race==&quot;B&quot;), &quot;Black&quot;),
-    Race=replace(Race, which(Race==&quot;H&quot;), &quot;Hispanic&quot;),
-    Race=replace(Race, which(Race==&quot;A&quot;), &quot;Asian&quot;),
-    Race=replace(Race, which(Race==&quot;N&quot;), &quot;Native American&quot;),
-    Race=replace(Race, which(Race==&quot;O&quot;), &quot;Other&quot;),
-    #year=as.numeric(format(date,&quot;%Y&quot;)),
-    #gender=replace(gender, which(gender==&quot;M&quot;), &quot;Male&quot;),
-    #gender=replace(gender, which(gender==&quot;F&quot;), &quot;Female&quot;),
-    State = state) %&gt;% 
-  ##Sum across years for state for each race
-  dplyr::group_by(State) %&gt;% 
-  dplyr::summarise(
-    killed.White = length(which(Race == &quot;White&quot;)),
-    killed.Black = length(which(Race == &quot;Black&quot;)),
-    killed.Hispanic = length(which(Race == &quot;Hispanic&quot;)),
-    killed.Asian = length(which(Race == &quot;Asian&quot;)),
-    killed.NativeAmerican = length(which(Race == &quot;Native American&quot;)),
-    killed.Total = n() )
+    dplyr::transmute(Race = race, Race = replace(Race, which(Race == &quot;W&quot;), &quot;White&quot;), 
+        Race = replace(Race, which(Race == &quot;B&quot;), &quot;Black&quot;), Race = replace(Race, 
+            which(Race == &quot;H&quot;), &quot;Hispanic&quot;), Race = replace(Race, which(Race == 
+            &quot;A&quot;), &quot;Asian&quot;), Race = replace(Race, which(Race == &quot;N&quot;), &quot;Native American&quot;), 
+        Race = replace(Race, which(Race == &quot;O&quot;), &quot;Other&quot;), year = as.numeric(format(date, 
+            &quot;%Y&quot;)), State = getState.abb(state)) %&gt;% ## Sum across years for state for each race
+dplyr::filter(year &lt; 2017) %&gt;% dplyr::group_by(State) %&gt;% dplyr::summarise(killed.White = length(which(Race == 
+    &quot;White&quot;)), killed.Black = length(which(Race == &quot;Black&quot;)), killed.Hispanic = length(which(Race == 
+    &quot;Hispanic&quot;)), killed.Asian = length(which(Race == &quot;Asian&quot;)), killed.NativeAmerican = length(which(Race == 
+    &quot;Native American&quot;)), killed.Total = n())
 
-tibble::as_tibble(wapo)</code></pre>
-<pre><code>## # A tibble: 51 × 7
-##    State killed.White killed.Black killed.Hispanic killed.Asian
-##    &lt;chr&gt;        &lt;int&gt;        &lt;int&gt;           &lt;int&gt;        &lt;int&gt;
-## 1     AK            6            1               0            0
-## 2     AL           30           13               0            0
-## 3     AR           16            5               0            0
-## 4     AZ           49            4              33            0
-## 5     CA          116           65             156           15
-## 6     CO           30            8              20            2
-## 7     CT            5            0               2            0
-## 8     DC            1           10               0            0
-## 9     DE            4            4               0            0
-## 10    FL           66           48              17            1
-## # ... with 41 more rows, and 2 more variables:
-## #   killed.NativeAmerican &lt;int&gt;, killed.Total &lt;int&gt;</code></pre>
+knitr::kable(wapo)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">State</th>
+<th align="right">killed.White</th>
+<th align="right">killed.Black</th>
+<th align="right">killed.Hispanic</th>
+<th align="right">killed.Asian</th>
+<th align="right">killed.NativeAmerican</th>
+<th align="right">killed.Total</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">AK</td>
+<td align="right">5</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">5</td>
+<td align="right">11</td>
+</tr>
+<tr class="even">
+<td align="left">AL</td>
+<td align="right">28</td>
+<td align="right">12</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">42</td>
+</tr>
+<tr class="odd">
+<td align="left">AR</td>
+<td align="right">13</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">20</td>
+</tr>
+<tr class="even">
+<td align="left">AZ</td>
+<td align="right">47</td>
+<td align="right">3</td>
+<td align="right">29</td>
+<td align="right">0</td>
+<td align="right">8</td>
+<td align="right">92</td>
+</tr>
+<tr class="odd">
+<td align="left">CA</td>
+<td align="right">98</td>
+<td align="right">55</td>
+<td align="right">134</td>
+<td align="right">13</td>
+<td align="right">0</td>
+<td align="right">327</td>
+</tr>
+<tr class="even">
+<td align="left">CO</td>
+<td align="right">28</td>
+<td align="right">7</td>
+<td align="right">17</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">60</td>
+</tr>
+<tr class="odd">
+<td align="left">CT</td>
+<td align="right">5</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">6</td>
+</tr>
+<tr class="even">
+<td align="left">DC</td>
+<td align="right">0</td>
+<td align="right">9</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">9</td>
+</tr>
+<tr class="odd">
+<td align="left">DE</td>
+<td align="right">3</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">4</td>
+</tr>
+<tr class="even">
+<td align="left">FL</td>
+<td align="right">54</td>
+<td align="right">42</td>
+<td align="right">16</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">120</td>
+</tr>
+<tr class="odd">
+<td align="left">GA</td>
+<td align="right">26</td>
+<td align="right">19</td>
+<td align="right">5</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">55</td>
+</tr>
+<tr class="even">
+<td align="left">HI</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">8</td>
+</tr>
+<tr class="odd">
+<td align="left">IA</td>
+<td align="right">7</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">10</td>
+</tr>
+<tr class="even">
+<td align="left">ID</td>
+<td align="right">10</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">13</td>
+</tr>
+<tr class="odd">
+<td align="left">IL</td>
+<td align="right">14</td>
+<td align="right">28</td>
+<td align="right">5</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">47</td>
+</tr>
+<tr class="even">
+<td align="left">IN</td>
+<td align="right">19</td>
+<td align="right">10</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">33</td>
+</tr>
+<tr class="odd">
+<td align="left">KS</td>
+<td align="right">16</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">19</td>
+</tr>
+<tr class="even">
+<td align="left">KY</td>
+<td align="right">25</td>
+<td align="right">6</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">34</td>
+</tr>
+<tr class="odd">
+<td align="left">LA</td>
+<td align="right">18</td>
+<td align="right">25</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">46</td>
+</tr>
+<tr class="even">
+<td align="left">MA</td>
+<td align="right">9</td>
+<td align="right">7</td>
+<td align="right">5</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">21</td>
+</tr>
+<tr class="odd">
+<td align="left">MD</td>
+<td align="right">8</td>
+<td align="right">21</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">30</td>
+</tr>
+<tr class="even">
+<td align="left">ME</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">4</td>
+</tr>
+<tr class="odd">
+<td align="left">MI</td>
+<td align="right">17</td>
+<td align="right">11</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">29</td>
+</tr>
+<tr class="even">
+<td align="left">MN</td>
+<td align="right">17</td>
+<td align="right">5</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">26</td>
+</tr>
+<tr class="odd">
+<td align="left">MO</td>
+<td align="right">24</td>
+<td align="right">15</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">42</td>
+</tr>
+<tr class="even">
+<td align="left">MS</td>
+<td align="right">11</td>
+<td align="right">5</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">16</td>
+</tr>
+<tr class="odd">
+<td align="left">MT</td>
+<td align="right">9</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">9</td>
+</tr>
+<tr class="even">
+<td align="left">NC</td>
+<td align="right">32</td>
+<td align="right">21</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">56</td>
+</tr>
+<tr class="odd">
+<td align="left">ND</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">NE</td>
+<td align="right">12</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">15</td>
+</tr>
+<tr class="odd">
+<td align="left">NH</td>
+<td align="right">5</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">5</td>
+</tr>
+<tr class="even">
+<td align="left">NJ</td>
+<td align="right">10</td>
+<td align="right">11</td>
+<td align="right">3</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">27</td>
+</tr>
+<tr class="odd">
+<td align="left">NM</td>
+<td align="right">15</td>
+<td align="right">0</td>
+<td align="right">24</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">41</td>
+</tr>
+<tr class="even">
+<td align="left">NV</td>
+<td align="right">15</td>
+<td align="right">5</td>
+<td align="right">10</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">33</td>
+</tr>
+<tr class="odd">
+<td align="left">NY</td>
+<td align="right">16</td>
+<td align="right">17</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">36</td>
+</tr>
+<tr class="even">
+<td align="left">OH</td>
+<td align="right">25</td>
+<td align="right">24</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">55</td>
+</tr>
+<tr class="odd">
+<td align="left">OK</td>
+<td align="right">35</td>
+<td align="right">13</td>
+<td align="right">4</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">58</td>
+</tr>
+<tr class="even">
+<td align="left">OR</td>
+<td align="right">26</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">30</td>
+</tr>
+<tr class="odd">
+<td align="left">PA</td>
+<td align="right">17</td>
+<td align="right">18</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">40</td>
+</tr>
+<tr class="even">
+<td align="left">RI</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">2</td>
+</tr>
+<tr class="odd">
+<td align="left">SC</td>
+<td align="right">23</td>
+<td align="right">13</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">36</td>
+</tr>
+<tr class="even">
+<td align="left">SD</td>
+<td align="right">5</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">7</td>
+</tr>
+<tr class="odd">
+<td align="left">TN</td>
+<td align="right">28</td>
+<td align="right">7</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">42</td>
+</tr>
+<tr class="even">
+<td align="left">TX</td>
+<td align="right">82</td>
+<td align="right">35</td>
+<td align="right">52</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">180</td>
+</tr>
+<tr class="odd">
+<td align="left">UT</td>
+<td align="right">17</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">18</td>
+</tr>
+<tr class="even">
+<td align="left">VA</td>
+<td align="right">15</td>
+<td align="right">18</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">35</td>
+</tr>
+<tr class="odd">
+<td align="left">VT</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">WA</td>
+<td align="right">25</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">2</td>
+<td align="right">4</td>
+<td align="right">42</td>
+</tr>
+<tr class="odd">
+<td align="left">WI</td>
+<td align="right">19</td>
+<td align="right">7</td>
+<td align="right">2</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">28</td>
+</tr>
+<tr class="even">
+<td align="left">WV</td>
+<td align="right">16</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">22</td>
+</tr>
+<tr class="odd">
+<td align="left">WY</td>
+<td align="right">5</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">8</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="ii.-load-census-data" class="section level3">
 <h3>II. Load Census Data</h3>
@@ -310,35 +777,493 @@ dplyr::transmute(State = NAME, Hisp = ORIGIN, Race = RACE, AGE = AGE, population
 ## results are roughly the same if you include hispanic blacks, asians, etc.
 ## since there are so few of them.  I&#39;m also combining Asians and PAcific
 ## Islanders since they are not distinguished in the WaPo data.
-dplyr::mutate(State = state.abb[match(State, state.name)], Race = replace(Race, 
-    which(Race == 1 &amp; Hisp == 1), &quot;White&quot;), Race = replace(Race, which(Race == 
-    1 &amp; Hisp == 2), &quot;Hispanic&quot;), Race = replace(Race, which(Race == 2 &amp; Hisp == 
-    0), &quot;Black&quot;), Race = replace(Race, which(Race == 3 &amp; Hisp == 0), &quot;Native American&quot;), 
-    Race = replace(Race, which(Race == 4 &amp; Hisp == 0), &quot;Asian&quot;), Race = replace(Race, 
-        which(Race == 5 &amp; Hisp == 0), &quot;Asian&quot;)) %&gt;% dplyr::select(-c(Hisp)) %&gt;% 
-    dplyr::filter(Race %in% c(&quot;White&quot;, &quot;Hispanic&quot;, &quot;Black&quot;, &quot;Asian&quot;, &quot;Native American&quot;)) %&gt;% 
-    dplyr::group_by(State, Race) %&gt;% ## Summing across all ages each race within each state
+dplyr::mutate(State = getState.abb(State), Race = replace(Race, which(Race == 
+    1 &amp; Hisp == 1), &quot;White&quot;), Race = replace(Race, which(Race == 1 &amp; Hisp == 
+    2), &quot;Hispanic&quot;), Race = replace(Race, which(Race == 2 &amp; Hisp == 0), &quot;Black&quot;), 
+    Race = replace(Race, which(Race == 3 &amp; Hisp == 0), &quot;Native American&quot;), Race = replace(Race, 
+        which(Race == 4 &amp; Hisp == 0), &quot;Asian&quot;), Race = replace(Race, which(Race == 
+        5 &amp; Hisp == 0), &quot;Asian&quot;)) %&gt;% dplyr::select(-c(Hisp)) %&gt;% dplyr::filter(Race %in% 
+    c(&quot;White&quot;, &quot;Hispanic&quot;, &quot;Black&quot;, &quot;Asian&quot;, &quot;Native American&quot;)) %&gt;% dplyr::group_by(State, 
+    Race) %&gt;% ## Summing across all ages each race within each state
 dplyr::summarise(population = sum(population, na.rm = T)) %&gt;% tidyr::spread(Race, 
     population) %&gt;% ## Creating a &#39;Total&#39; population category
 dplyr::mutate(Total = White + Hispanic + Black + Asian + `Native American`)
 
-tibble::as_tibble(census_state)</code></pre>
-<pre><code>## Source: local data frame [51 x 7]
-## Groups: State [51]
-## 
-##    State   Asian   Black Hispanic `Native American`    White    Total
-##    &lt;chr&gt;   &lt;int&gt;   &lt;int&gt;    &lt;int&gt;             &lt;int&gt;    &lt;int&gt;    &lt;int&gt;
-## 1     AK   74220   40105    41640            143826   496799   796590
-## 2     AL   92339 1338287   175866             66733  3268304  4941529
-## 3     AR   69177  490231   197047             58338  2226051  3040844
-## 4     AZ  331963  403715  1935766            429351  3930262  7031057
-## 5     CA 6869486 2989322 14040493           1078986 15788764 40767051
-## 6     CO  255130  304298  1068750            148150  3855642  5631970
-## 7     CT  197283  466878   473242             40962  2500213  3678578
-## 8     DE   44550  228005    70669             12698   615841   971763
-## 9     FL  766873 3642783  4622640            203379 11482439 20718114
-## 10    GA  491234 3364359   820463            112516  5650933 10439505
-## # ... with 41 more rows</code></pre>
+knitr::kable(census_state)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">State</th>
+<th align="right">Asian</th>
+<th align="right">Black</th>
+<th align="right">Hispanic</th>
+<th align="right">Native American</th>
+<th align="right">White</th>
+<th align="right">Total</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">AK</td>
+<td align="right">74220</td>
+<td align="right">40105</td>
+<td align="right">41640</td>
+<td align="right">143826</td>
+<td align="right">496799</td>
+<td align="right">796590</td>
+</tr>
+<tr class="even">
+<td align="left">AL</td>
+<td align="right">92339</td>
+<td align="right">1338287</td>
+<td align="right">175866</td>
+<td align="right">66733</td>
+<td align="right">3268304</td>
+<td align="right">4941529</td>
+</tr>
+<tr class="odd">
+<td align="left">AR</td>
+<td align="right">69177</td>
+<td align="right">490231</td>
+<td align="right">197047</td>
+<td align="right">58338</td>
+<td align="right">2226051</td>
+<td align="right">3040844</td>
+</tr>
+<tr class="even">
+<td align="left">AZ</td>
+<td align="right">331963</td>
+<td align="right">403715</td>
+<td align="right">1935766</td>
+<td align="right">429351</td>
+<td align="right">3930262</td>
+<td align="right">7031057</td>
+</tr>
+<tr class="odd">
+<td align="left">CA</td>
+<td align="right">6869486</td>
+<td align="right">2989322</td>
+<td align="right">14040493</td>
+<td align="right">1078986</td>
+<td align="right">15788764</td>
+<td align="right">40767051</td>
+</tr>
+<tr class="even">
+<td align="left">CO</td>
+<td align="right">255130</td>
+<td align="right">304298</td>
+<td align="right">1068750</td>
+<td align="right">148150</td>
+<td align="right">3855642</td>
+<td align="right">5631970</td>
+</tr>
+<tr class="odd">
+<td align="left">CT</td>
+<td align="right">197283</td>
+<td align="right">466878</td>
+<td align="right">473242</td>
+<td align="right">40962</td>
+<td align="right">2500213</td>
+<td align="right">3678578</td>
+</tr>
+<tr class="even">
+<td align="left">DC</td>
+<td align="right">37653</td>
+<td align="right">335822</td>
+<td align="right">55945</td>
+<td align="right">9141</td>
+<td align="right">254510</td>
+<td align="right">693071</td>
+</tr>
+<tr class="odd">
+<td align="left">DE</td>
+<td align="right">44550</td>
+<td align="right">228005</td>
+<td align="right">70669</td>
+<td align="right">12698</td>
+<td align="right">615841</td>
+<td align="right">971763</td>
+</tr>
+<tr class="even">
+<td align="left">FL</td>
+<td align="right">766873</td>
+<td align="right">3642783</td>
+<td align="right">4622640</td>
+<td align="right">203379</td>
+<td align="right">11482439</td>
+<td align="right">20718114</td>
+</tr>
+<tr class="odd">
+<td align="left">GA</td>
+<td align="right">491234</td>
+<td align="right">3364359</td>
+<td align="right">820463</td>
+<td align="right">112516</td>
+<td align="right">5650933</td>
+<td align="right">10439505</td>
+</tr>
+<tr class="even">
+<td align="left">HI</td>
+<td align="right">1173481</td>
+<td align="right">56565</td>
+<td align="right">101049</td>
+<td align="right">37862</td>
+<td align="right">524496</td>
+<td align="right">1893453</td>
+</tr>
+<tr class="odd">
+<td align="left">IA</td>
+<td align="right">92785</td>
+<td align="right">140006</td>
+<td align="right">164384</td>
+<td align="right">31348</td>
+<td align="right">2754083</td>
+<td align="right">3182606</td>
+</tr>
+<tr class="even">
+<td align="left">ID</td>
+<td align="right">44902</td>
+<td align="right">22007</td>
+<td align="right">187076</td>
+<td align="right">46816</td>
+<td align="right">1395356</td>
+<td align="right">1696157</td>
+</tr>
+<tr class="odd">
+<td align="left">IL</td>
+<td align="right">810389</td>
+<td align="right">2009937</td>
+<td align="right">2025465</td>
+<td align="right">139840</td>
+<td align="right">8132912</td>
+<td align="right">13118543</td>
+</tr>
+<tr class="even">
+<td align="left">IN</td>
+<td align="right">179317</td>
+<td align="right">712550</td>
+<td align="right">402399</td>
+<td align="right">62546</td>
+<td align="right">5400383</td>
+<td align="right">6757195</td>
+</tr>
+<tr class="odd">
+<td align="left">KS</td>
+<td align="right">109477</td>
+<td align="right">222885</td>
+<td align="right">309984</td>
+<td align="right">68432</td>
+<td align="right">2290079</td>
+<td align="right">3000857</td>
+</tr>
+<tr class="even">
+<td align="left">KY</td>
+<td align="right">86311</td>
+<td align="right">413580</td>
+<td align="right">135678</td>
+<td align="right">36636</td>
+<td align="right">3837964</td>
+<td align="right">4510169</td>
+</tr>
+<tr class="odd">
+<td align="left">LA</td>
+<td align="right">110022</td>
+<td align="right">1559188</td>
+<td align="right">200763</td>
+<td align="right">63567</td>
+<td align="right">2817869</td>
+<td align="right">4751409</td>
+</tr>
+<tr class="even">
+<td align="left">MA</td>
+<td align="right">512363</td>
+<td align="right">659668</td>
+<td align="right">618260</td>
+<td align="right">70214</td>
+<td align="right">5101413</td>
+<td align="right">6961918</td>
+</tr>
+<tr class="odd">
+<td align="left">MD</td>
+<td align="right">463421</td>
+<td align="right">1926573</td>
+<td align="right">478070</td>
+<td align="right">76800</td>
+<td align="right">3241665</td>
+<td align="right">6186529</td>
+</tr>
+<tr class="even">
+<td align="left">ME</td>
+<td align="right">23323</td>
+<td align="right">26532</td>
+<td align="right">18654</td>
+<td align="right">19660</td>
+<td align="right">1264763</td>
+<td align="right">1352932</td>
+</tr>
+<tr class="odd">
+<td align="left">MI</td>
+<td align="right">366630</td>
+<td align="right">1530388</td>
+<td align="right">432381</td>
+<td align="right">153104</td>
+<td align="right">7688454</td>
+<td align="right">10170957</td>
+</tr>
+<tr class="even">
+<td align="left">MN</td>
+<td align="right">313841</td>
+<td align="right">393395</td>
+<td align="right">252291</td>
+<td align="right">117564</td>
+<td align="right">4554134</td>
+<td align="right">5631225</td>
+</tr>
+<tr class="odd">
+<td align="left">MO</td>
+<td align="right">166654</td>
+<td align="right">783917</td>
+<td align="right">222123</td>
+<td align="right">82875</td>
+<td align="right">4969582</td>
+<td align="right">6225151</td>
+</tr>
+<tr class="even">
+<td align="left">MS</td>
+<td align="right">43864</td>
+<td align="right">1146449</td>
+<td align="right">76423</td>
+<td align="right">30132</td>
+<td align="right">1734474</td>
+<td align="right">3031342</td>
+</tr>
+<tr class="odd">
+<td align="left">MT</td>
+<td align="right">16435</td>
+<td align="right">11400</td>
+<td align="right">30771</td>
+<td align="right">86007</td>
+<td align="right">917350</td>
+<td align="right">1061963</td>
+</tr>
+<tr class="even">
+<td align="left">NC</td>
+<td align="right">358676</td>
+<td align="right">2348191</td>
+<td align="right">778108</td>
+<td align="right">229119</td>
+<td align="right">6560680</td>
+<td align="right">10274774</td>
+</tr>
+<tr class="odd">
+<td align="left">ND</td>
+<td align="right">15364</td>
+<td align="right">23131</td>
+<td align="right">22546</td>
+<td align="right">49847</td>
+<td align="right">662513</td>
+<td align="right">773401</td>
+</tr>
+<tr class="even">
+<td align="left">NE</td>
+<td align="right">58998</td>
+<td align="right">113682</td>
+<td align="right">178335</td>
+<td align="right">39891</td>
+<td align="right">1547639</td>
+<td align="right">1938545</td>
+</tr>
+<tr class="odd">
+<td align="left">NH</td>
+<td align="right">43327</td>
+<td align="right">27973</td>
+<td align="right">40507</td>
+<td align="right">11838</td>
+<td align="right">1230066</td>
+<td align="right">1353711</td>
+</tr>
+<tr class="even">
+<td align="left">NJ</td>
+<td align="right">956570</td>
+<td align="right">1439670</td>
+<td align="right">1521368</td>
+<td align="right">100180</td>
+<td align="right">5146692</td>
+<td align="right">9164480</td>
+</tr>
+<tr class="odd">
+<td align="left">NM</td>
+<td align="right">56475</td>
+<td align="right">69601</td>
+<td align="right">939053</td>
+<td align="right">246717</td>
+<td align="right">829130</td>
+<td align="right">2140976</td>
+</tr>
+<tr class="even">
+<td align="left">NV</td>
+<td align="right">346130</td>
+<td align="right">311617</td>
+<td align="right">744673</td>
+<td align="right">77354</td>
+<td align="right">1544500</td>
+<td align="right">3024274</td>
+</tr>
+<tr class="odd">
+<td align="left">NY</td>
+<td align="right">1948015</td>
+<td align="right">3786724</td>
+<td align="right">2910344</td>
+<td align="right">318526</td>
+<td align="right">11356124</td>
+<td align="right">20319733</td>
+</tr>
+<tr class="even">
+<td align="left">OH</td>
+<td align="right">310274</td>
+<td align="right">1634412</td>
+<td align="right">358475</td>
+<td align="right">101965</td>
+<td align="right">9476886</td>
+<td align="right">11882012</td>
+</tr>
+<tr class="odd">
+<td align="left">OK</td>
+<td align="right">121260</td>
+<td align="right">364882</td>
+<td align="right">342672</td>
+<td align="right">532016</td>
+<td align="right">2797325</td>
+<td align="right">4158155</td>
+</tr>
+<tr class="even">
+<td align="left">OR</td>
+<td align="right">265197</td>
+<td align="right">120634</td>
+<td align="right">465792</td>
+<td align="right">136727</td>
+<td align="right">3203032</td>
+<td align="right">4191382</td>
+</tr>
+<tr class="odd">
+<td align="left">PA</td>
+<td align="right">513870</td>
+<td align="right">1653996</td>
+<td align="right">702016</td>
+<td align="right">107484</td>
+<td align="right">10088820</td>
+<td align="right">13066186</td>
+</tr>
+<tr class="even">
+<td align="left">RI</td>
+<td align="right">48117</td>
+<td align="right">100579</td>
+<td align="right">120418</td>
+<td align="right">18738</td>
+<td align="right">799027</td>
+<td align="right">1086879</td>
+</tr>
+<tr class="odd">
+<td align="left">SC</td>
+<td align="right">107421</td>
+<td align="right">1404522</td>
+<td align="right">230290</td>
+<td align="right">53394</td>
+<td align="right">3193778</td>
+<td align="right">4989405</td>
+</tr>
+<tr class="even">
+<td align="left">SD</td>
+<td align="right">16539</td>
+<td align="right">21594</td>
+<td align="right">24718</td>
+<td align="right">88266</td>
+<td align="right">727491</td>
+<td align="right">878608</td>
+</tr>
+<tr class="odd">
+<td align="left">TN</td>
+<td align="right">155792</td>
+<td align="right">1192750</td>
+<td align="right">300823</td>
+<td align="right">69939</td>
+<td align="right">5007437</td>
+<td align="right">6726741</td>
+</tr>
+<tr class="even">
+<td align="left">TX</td>
+<td align="right">1545389</td>
+<td align="right">3672788</td>
+<td align="right">10192520</td>
+<td align="right">452905</td>
+<td align="right">12161654</td>
+<td align="right">28025256</td>
+</tr>
+<tr class="odd">
+<td align="left">UT</td>
+<td align="right">148489</td>
+<td align="right">58496</td>
+<td align="right">378560</td>
+<td align="right">67414</td>
+<td align="right">2421365</td>
+<td align="right">3074324</td>
+</tr>
+<tr class="even">
+<td align="left">VA</td>
+<td align="right">664701</td>
+<td align="right">1776464</td>
+<td align="right">656862</td>
+<td align="right">104395</td>
+<td align="right">5443876</td>
+<td align="right">8646298</td>
+</tr>
+<tr class="odd">
+<td align="left">VT</td>
+<td align="right">13891</td>
+<td align="right">11993</td>
+<td align="right">10215</td>
+<td align="right">7822</td>
+<td align="right">594460</td>
+<td align="right">638381</td>
+</tr>
+<tr class="even">
+<td align="left">WA</td>
+<td align="right">838055</td>
+<td align="right">398503</td>
+<td align="right">793680</td>
+<td align="right">244833</td>
+<td align="right">5258283</td>
+<td align="right">7533354</td>
+</tr>
+<tr class="odd">
+<td align="left">WI</td>
+<td align="right">192210</td>
+<td align="right">435145</td>
+<td align="right">345318</td>
+<td align="right">100614</td>
+<td align="right">4810050</td>
+<td align="right">5883337</td>
+</tr>
+<tr class="even">
+<td align="left">WV</td>
+<td align="right">21885</td>
+<td align="right">84131</td>
+<td align="right">24881</td>
+<td align="right">14728</td>
+<td align="right">1730320</td>
+<td align="right">1875945</td>
+</tr>
+<tr class="odd">
+<td align="left">WY</td>
+<td align="right">10516</td>
+<td align="right">11757</td>
+<td align="right">53106</td>
+<td align="right">21746</td>
+<td align="right">501682</td>
+<td align="right">598807</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="iii.-combine-data-and-calculate-rates-per-100000-population" class="section level3">
 <h3>III. Combine Data and Calculate Rates per 100,000 Population</h3>
@@ -348,23 +1273,481 @@ tibble::as_tibble(census_state)</code></pre>
         `Native American` = 1e+05 * killed.NativeAmerican/`Native American`, 
         Asian = 1e+05 * killed.Asian/Asian)
 
-tibble::as_tibble(wapoRates)</code></pre>
-<pre><code>## Source: local data frame [51 x 7]
-## Groups: State [51]
-## 
-##    State     Total     White    Black  Hispanic `Native American`
-##    &lt;chr&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;             &lt;dbl&gt;
-## 1     AK 1.6319562 1.2077319 2.493455 0.0000000        3.47642290
-## 2     AL 0.9308860 0.9179073 0.971391 0.0000000        0.00000000
-## 3     AR 0.8221402 0.7187616 1.019927 0.0000000        0.00000000
-## 4     AZ 1.4933743 1.2467362 0.990798 1.7047515        1.86327737
-## 5     CA 0.9640138 0.7346997 2.174406 1.1110721        0.09267961
-## 6     CO 1.1896370 0.7780805 2.629002 1.8713450        0.67499156
-## 7     CT 0.2446598 0.1999830 0.000000 0.4226168        0.00000000
-## 8     DC        NA        NA       NA        NA                NA
-## 9     DE 0.8232460 0.6495183 1.754347 0.0000000        0.00000000
-## 10    FL 0.6757372 0.5747908 1.317674 0.3677552        0.00000000
-## # ... with 41 more rows, and 1 more variables: Asian &lt;dbl&gt;</code></pre>
+knitr::kable(wapoRates)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">State</th>
+<th align="right">Total</th>
+<th align="right">White</th>
+<th align="right">Black</th>
+<th align="right">Hispanic</th>
+<th align="right">Native American</th>
+<th align="right">Asian</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">AK</td>
+<td align="right">1.3808860</td>
+<td align="right">1.0064432</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">3.4764229</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">AL</td>
+<td align="right">0.8499394</td>
+<td align="right">0.8567135</td>
+<td align="right">0.8966687</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">AR</td>
+<td align="right">0.6577121</td>
+<td align="right">0.5839938</td>
+<td align="right">0.6119564</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">AZ</td>
+<td align="right">1.3084804</td>
+<td align="right">1.1958490</td>
+<td align="right">0.7430985</td>
+<td align="right">1.4981150</td>
+<td align="right">1.8632774</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">CA</td>
+<td align="right">0.8021184</td>
+<td align="right">0.6206946</td>
+<td align="right">1.8398821</td>
+<td align="right">0.9543824</td>
+<td align="right">0.0000000</td>
+<td align="right">0.1892427</td>
+</tr>
+<tr class="even">
+<td align="left">CO</td>
+<td align="right">1.0653466</td>
+<td align="right">0.7262085</td>
+<td align="right">2.3003766</td>
+<td align="right">1.5906433</td>
+<td align="right">0.6749916</td>
+<td align="right">0.7839141</td>
+</tr>
+<tr class="odd">
+<td align="left">CT</td>
+<td align="right">0.1631065</td>
+<td align="right">0.1999830</td>
+<td align="right">0.0000000</td>
+<td align="right">0.2113084</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">DC</td>
+<td align="right">1.2985683</td>
+<td align="right">0.0000000</td>
+<td align="right">2.6799912</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">DE</td>
+<td align="right">0.4116230</td>
+<td align="right">0.4871387</td>
+<td align="right">0.4385869</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">FL</td>
+<td align="right">0.5792033</td>
+<td align="right">0.4702834</td>
+<td align="right">1.1529646</td>
+<td align="right">0.3461226</td>
+<td align="right">0.0000000</td>
+<td align="right">0.1303997</td>
+</tr>
+<tr class="odd">
+<td align="left">GA</td>
+<td align="right">0.5268449</td>
+<td align="right">0.4601010</td>
+<td align="right">0.5647435</td>
+<td align="right">0.6094120</td>
+<td align="right">0.0000000</td>
+<td align="right">0.2035690</td>
+</tr>
+<tr class="even">
+<td align="left">HI</td>
+<td align="right">0.4225085</td>
+<td align="right">0.0000000</td>
+<td align="right">1.7678777</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0852165</td>
+</tr>
+<tr class="odd">
+<td align="left">IA</td>
+<td align="right">0.3142079</td>
+<td align="right">0.2541681</td>
+<td align="right">2.1427653</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">ID</td>
+<td align="right">0.7664385</td>
+<td align="right">0.7166630</td>
+<td align="right">0.0000000</td>
+<td align="right">1.6036263</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">IL</td>
+<td align="right">0.3582715</td>
+<td align="right">0.1721401</td>
+<td align="right">1.3930785</td>
+<td align="right">0.2468569</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">IN</td>
+<td align="right">0.4883683</td>
+<td align="right">0.3518269</td>
+<td align="right">1.4034103</td>
+<td align="right">0.4970191</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">KS</td>
+<td align="right">0.6331525</td>
+<td align="right">0.6986659</td>
+<td align="right">0.4486619</td>
+<td align="right">0.6451946</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">KY</td>
+<td align="right">0.7538520</td>
+<td align="right">0.6513870</td>
+<td align="right">1.4507471</td>
+<td align="right">1.4740783</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">LA</td>
+<td align="right">0.9681339</td>
+<td align="right">0.6387806</td>
+<td align="right">1.6033987</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.9089091</td>
+</tr>
+<tr class="even">
+<td align="left">MA</td>
+<td align="right">0.3016410</td>
+<td align="right">0.1764217</td>
+<td align="right">1.0611398</td>
+<td align="right">0.8087212</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">MD</td>
+<td align="right">0.4849246</td>
+<td align="right">0.2467868</td>
+<td align="right">1.0900184</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">ME</td>
+<td align="right">0.2956542</td>
+<td align="right">0.2371986</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">MI</td>
+<td align="right">0.2851256</td>
+<td align="right">0.2211108</td>
+<td align="right">0.7187720</td>
+<td align="right">0.2312775</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">MN</td>
+<td align="right">0.4617113</td>
+<td align="right">0.3732872</td>
+<td align="right">1.2709872</td>
+<td align="right">0.3963677</td>
+<td align="right">0.0000000</td>
+<td align="right">0.3186327</td>
+</tr>
+<tr class="odd">
+<td align="left">MO</td>
+<td align="right">0.6746824</td>
+<td align="right">0.4829380</td>
+<td align="right">1.9134679</td>
+<td align="right">0.4502010</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">MS</td>
+<td align="right">0.5278190</td>
+<td align="right">0.6341980</td>
+<td align="right">0.4361293</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">MT</td>
+<td align="right">0.8474872</td>
+<td align="right">0.9810868</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">NC</td>
+<td align="right">0.5450242</td>
+<td align="right">0.4877543</td>
+<td align="right">0.8943054</td>
+<td align="right">0.1285169</td>
+<td align="right">0.0000000</td>
+<td align="right">0.2788032</td>
+</tr>
+<tr class="odd">
+<td align="left">ND</td>
+<td align="right">0.2585981</td>
+<td align="right">0.1509404</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">2.0061388</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">NE</td>
+<td align="right">0.7737762</td>
+<td align="right">0.7753746</td>
+<td align="right">2.6389402</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">NH</td>
+<td align="right">0.3693551</td>
+<td align="right">0.4064823</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">NJ</td>
+<td align="right">0.2946157</td>
+<td align="right">0.1942996</td>
+<td align="right">0.7640640</td>
+<td align="right">0.1971909</td>
+<td align="right">0.0000000</td>
+<td align="right">0.1045402</td>
+</tr>
+<tr class="odd">
+<td align="left">NM</td>
+<td align="right">1.9150145</td>
+<td align="right">1.8091252</td>
+<td align="right">0.0000000</td>
+<td align="right">2.5557663</td>
+<td align="right">0.4053227</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">NV</td>
+<td align="right">1.0911710</td>
+<td align="right">0.9711881</td>
+<td align="right">1.6045338</td>
+<td align="right">1.3428713</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">NY</td>
+<td align="right">0.1771677</td>
+<td align="right">0.1408931</td>
+<td align="right">0.4489369</td>
+<td align="right">0.0343602</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0513343</td>
+</tr>
+<tr class="even">
+<td align="left">OH</td>
+<td align="right">0.4628846</td>
+<td align="right">0.2637997</td>
+<td align="right">1.4684180</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.6445916</td>
+</tr>
+<tr class="odd">
+<td align="left">OK</td>
+<td align="right">1.3948494</td>
+<td align="right">1.2511953</td>
+<td align="right">3.5627956</td>
+<td align="right">1.1672970</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">OR</td>
+<td align="right">0.7157544</td>
+<td align="right">0.8117309</td>
+<td align="right">1.6579074</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">PA</td>
+<td align="right">0.3061337</td>
+<td align="right">0.1685034</td>
+<td align="right">1.0882735</td>
+<td align="right">0.1424469</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">RI</td>
+<td align="right">0.1840131</td>
+<td align="right">0.0000000</td>
+<td align="right">0.9942433</td>
+<td align="right">0.8304406</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">SC</td>
+<td align="right">0.7215289</td>
+<td align="right">0.7201502</td>
+<td align="right">0.9255818</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">SD</td>
+<td align="right">0.7967148</td>
+<td align="right">0.6872937</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">2.2658781</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">TN</td>
+<td align="right">0.6243737</td>
+<td align="right">0.5591683</td>
+<td align="right">0.5868791</td>
+<td align="right">0.6648428</td>
+<td align="right">0.0000000</td>
+<td align="right">0.6418815</td>
+</tr>
+<tr class="even">
+<td align="left">TX</td>
+<td align="right">0.6422778</td>
+<td align="right">0.6742504</td>
+<td align="right">0.9529545</td>
+<td align="right">0.5101781</td>
+<td align="right">0.2207969</td>
+<td align="right">0.0647086</td>
+</tr>
+<tr class="odd">
+<td align="left">UT</td>
+<td align="right">0.5854946</td>
+<td align="right">0.7020833</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">VA</td>
+<td align="right">0.4047975</td>
+<td align="right">0.2755390</td>
+<td align="right">1.0132488</td>
+<td align="right">0.3044780</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">VT</td>
+<td align="right">0.4699388</td>
+<td align="right">0.3364398</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">12.7844541</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">WA</td>
+<td align="right">0.5575206</td>
+<td align="right">0.4754404</td>
+<td align="right">1.0037566</td>
+<td align="right">0.5039815</td>
+<td align="right">1.6337667</td>
+<td align="right">0.2386478</td>
+</tr>
+<tr class="odd">
+<td align="left">WI</td>
+<td align="right">0.4759204</td>
+<td align="right">0.3950063</td>
+<td align="right">1.6086592</td>
+<td align="right">0.5791763</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="even">
+<td align="left">WV</td>
+<td align="right">1.1727423</td>
+<td align="right">0.9246845</td>
+<td align="right">3.5658675</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+</tr>
+<tr class="odd">
+<td align="left">WY</td>
+<td align="right">1.3359897</td>
+<td align="right">0.9966473</td>
+<td align="right">0.0000000</td>
+<td align="right">1.8830264</td>
+<td align="right">4.5985469</td>
+<td align="right">0.0000000</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="iv.-calculate-means-of-state-rates-for-each-race" class="section level3">
 <h3>IV. Calculate Means of State Rates for each Race</h3>
@@ -372,16 +1755,41 @@ tibble::as_tibble(wapoRates)</code></pre>
     dplyr::summarise_all(mean, na.rm = T) %&gt;% tidyr::gather(Race, `Mean Killed Rate`, 
     1:6) %&gt;% dplyr::arrange(desc(`Mean Killed Rate`))
 
-tibble::as_tibble(wapoRates_sum)</code></pre>
-<pre><code>## # A tibble: 6 × 2
-##              Race `Mean Killed Rate`
-##             &lt;chr&gt;              &lt;dbl&gt;
-## 1           Black          1.3181650
-## 2           Total          0.7781821
-## 3 Native American          0.6613396
-## 4           White          0.6319581
-## 5        Hispanic          0.5486724
-## 6           Asian          0.2489872</code></pre>
+knitr::kable(wapoRates_sum)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Race</th>
+<th align="right">Mean Killed Rate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Black</td>
+<td align="right">1.0334919</td>
+</tr>
+<tr class="even">
+<td align="left">Total</td>
+<td align="right">0.6647738</td>
+</tr>
+<tr class="odd">
+<td align="left">Native American</td>
+<td align="right">0.5868548</td>
+</tr>
+<tr class="even">
+<td align="left">White</td>
+<td align="right">0.5416090</td>
+</tr>
+<tr class="odd">
+<td align="left">Hispanic</td>
+<td align="right">0.4393706</td>
+</tr>
+<tr class="even">
+<td align="left">Asian</td>
+<td align="right">0.0910665</td>
+</tr>
+</tbody>
+</table>
 <p>As shown above, the Black Rate is higher. Next, I’ll plot the results. Note that Washington D.c. Results are not included. I’ve calculated this elsewhere and it doesn’t much change the results.</p>
 </div>
 <div id="v.-graph-the-results." class="section level3">
@@ -416,7 +1824,7 @@ geom_boxplot(alpha = 0.5, position = &quot;dodge&quot;, color = &quot;black&quot
     KilledR &gt; 2.5), aes(x = Race, y = KilledR, label = State), color = &quot;black&quot;, 
     size = 3)</code></pre>
 <p><img src="/post/2017-05-19-a-question-about-a-new-article-on-police-shootings_files/figure-html/unnamed-chunk-5-1.png" width="1056" /></p>
-<p>These results contravene these of Shane, Lawton, and Swenson (2017) and are well known. I thought that maybe they had calculated their mean fatality rate using <em>total population</em> rather than <em>race-specific population</em> as the denominator. This seems doubtful. Re-calculating using total population as the denominator, the White rate is higher than the black rate, but the results are still far off. My results are 0.37 white killings per 100,000 people (of all races) and 0.14 killings of blacks per 100,000 people (of all races), rather than 0.74 and 0.63, respectively. Moreover, I could not replicate the ‘mean fatality base rate’ of 0.897 for Hispanics.</p>
+<p>These results contravene those of Shane, Lawton, and Swenson (2017) and are well known. I thought that maybe they had calculated their mean fatality rate using <em>total population</em> rather than <em>race-specific population</em> as the denominator. This seems doubtful. Re-calculating using total population as the denominator, the White rate is higher than the black rate, but the results are still far off. My results are 0.37 white killings per 100,000 people (of all races) and 0.14 killings of blacks per 100,000 people (of all races), rather than 0.74 and 0.63, respectively. Moreover, I could not replicate the ‘mean fatality base rate’ of 0.897 for Hispanics.</p>
 <p>Was this a mistake on their part, or did I miss something?</p>
 </div>
 
