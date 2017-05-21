@@ -1607,6 +1607,8 @@ geom_boxplot(alpha = 0.5, position = &amp;quot;dodge&amp;quot;, color = &amp;quo
 &lt;p&gt;&lt;img src=&#34;/post/2017-05-19-a-question-about-a-new-article-on-police-shootings_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;1056&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;These results contravene those of Shane, Lawton, and Swenson (2017) and are well known. I thought that maybe they had calculated their mean fatality rate using &lt;em&gt;total population&lt;/em&gt; rather than &lt;em&gt;race-specific population&lt;/em&gt; as the denominator. This seems doubtful. Re-calculating using total population as the denominator, the White rate is higher than the black rate, but the results are still far off. My results are 0.37 white killings per 100,000 people (of all races) and 0.14 killings of blacks per 100,000 people (of all races), rather than 0.74 and 0.63, respectively. Moreover, I could not replicate the ‘mean fatality base rate’ of 0.897 for Hispanics.&lt;/p&gt;
 &lt;p&gt;Was this a mistake on their part, or did I miss something?&lt;/p&gt;
+&lt;a class=&#34;muut&#34; href=&#34;https://muut.com/i/jhbradford/comments&#34; type=&#34;dynamic&#34;&gt;jhbradford&lt;/a&gt;
+&lt;script src=&#34;//cdn.muut.com/1/moot.min.js&#34;&gt;&lt;/script&gt;
 &lt;/div&gt;
 </description>
     </item>
