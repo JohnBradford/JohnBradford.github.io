@@ -1897,6 +1897,8 @@ ggrepel::geom_label_repel(data = dplyr::filter(df, 1e+05 * killRate &amp;gt; 10,
       <guid>/post/test-post/</guid>
       <description>&lt;p&gt;Scatterplot - Violent Crime &amp;amp; Population by Race: Police Killings vs No Police Killings of Civilians. (Washington Post)&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2017-05-07-test-post_files/figure-html/unnamed-chunk-2-1.png&#34; width=&#34;864&#34; /&gt;&lt;/p&gt;
+&lt;a class=&#34;muut&#34; href=&#34;https://muut.com/i/jhbradford/comments&#34; type=&#34;dynamic&#34;&gt;jhbradford&lt;/a&gt;
+&lt;script src=&#34;//cdn.muut.com/1/moot.min.js&#34;&gt;&lt;/script&gt;
 </description>
     </item>
     

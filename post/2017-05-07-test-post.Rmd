@@ -263,3 +263,8 @@ b_rateK <- b_vc_meanK / b_p_meanK
   facet_wrap(~Race, ncol=2) 
 
 ```
+
+
+
+
+<a class="muut" href="https://muut.com/i/jhbradford/comments" type="dynamic">jhbradford</a> <script src="//cdn.muut.com/1/moot.min.js"></script>
