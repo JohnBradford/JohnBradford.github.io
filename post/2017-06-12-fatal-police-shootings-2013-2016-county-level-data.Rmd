@@ -1,0 +1,24 @@
+---
+title: Fatal Police Shootings (2013-2016) & County Level Data
+author: John Hamilton Bradford
+date: '2017-06-12'
+slug: fatal-police-shootings-2013-2016-county-level-data
+categories: []
+tags:
+  - Officer-involved shootings
+  - Police-involved fatalities
+  - police shooting
+  - Police use of force
+  - black lives matter
+  - county-level data
+---
+
+I've just published new data sets to figshare with accompaying code to RPubs.  Below is the project description with links.
+
+This is a set of csv files including a number of variables including fatal police shootings and other crime and socioeconomic covariates at different levels of geographical aggregation from 2013-2016. Five of the files use only the Washington Post data covering years 2015 and 2016, whereas the other five files utilize fatal police shootings of civilians for years 2013-2016, combining the Lott & Moody (2016) data for years 2013-2015 and Washington Post data for 2016. Other variables are included from the American Community Survey (ACS), the FBI's Uniform Crime Reports (UCR), the Law Enforcement Management and Administrative Statistics (LEMAS), Stanford Education Data Archive (SEDA), the US Census, and the Local Area Unemployment Statistics (LAUS) provided by the Bureau of Labor Statistics (BLS).
+
+The base file is the county-level data. The two files labelled "tenk" consist of regions with at least 10,000 residents. Counties with fewer than 10,000 residents are combined with adjacent counties, ranked by population in ascending order, so that counties with fewer than 10,000 residents are iteratively combined with adjacent neighbors with the fewest residents until they reach the threshold of 10,000 residents. The same algorithm is used to produce regions with 100,000 and 1 million residents. The final two files are state-level aggregations.
+
+Link to figshare:  https://doi.org/10.6084/m9.figshare.5099536
+
+Link to RPubs: http://rpubs.com/johnbradford/policeShootDataCreation

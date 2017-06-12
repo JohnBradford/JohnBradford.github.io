@@ -7,8 +7,17 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2017 John Hamilton Bradford, Ph.D.</copyright>
-    <lastBuildDate>Sun, 07 May 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 05 Jun 2017 00:00:00 +0000</lastBuildDate>
     <atom:link href="/project/" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Fatal Police Shootings (2013-2016) &amp; County Level Data</title>
+      <link>/project/data_policeshooting/</link>
+      <pubDate>Mon, 05 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/project/data_policeshooting/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>County Crime and Health Data Analysis: </title>

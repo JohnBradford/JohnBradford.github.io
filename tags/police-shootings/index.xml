@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Police Shootings on John Hamilton Bradford, Ph.D.</title>
+    <link>/tags/police-shootings/</link>
+    <description>Recent content in Police Shootings on John Hamilton Bradford, Ph.D.</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2017 John Hamilton Bradford, Ph.D.</copyright>
+    <lastBuildDate>Mon, 05 Jun 2017 00:00:00 +0000</lastBuildDate>
+    <atom:link href="/tags/police-shootings/" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Fatal Police Shootings (2013-2016) &amp; County Level Data</title>
+      <link>/project/data_policeshooting/</link>
+      <pubDate>Mon, 05 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/project/data_policeshooting/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

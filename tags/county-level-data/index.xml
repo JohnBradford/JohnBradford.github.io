@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>County Level Data on John Hamilton Bradford, Ph.D.</title>
+    <link>/tags/county-level-data/</link>
+    <description>Recent content in County Level Data on John Hamilton Bradford, Ph.D.</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2017 John Hamilton Bradford, Ph.D.</copyright>
+    <lastBuildDate>Mon, 12 Jun 2017 00:00:00 +0000</lastBuildDate>
+    <atom:link href="/tags/county-level-data/" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Fatal Police Shootings (2013-2016) &amp; County Level Data</title>
+      <link>/post/fatal-police-shootings-2013-2016-county-level-data/</link>
+      <pubDate>Mon, 12 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/post/fatal-police-shootings-2013-2016-county-level-data/</guid>
+      <description>&lt;p&gt;I’ve just published new data sets to figshare with accompaying code to RPubs. Below is the project description with links.&lt;/p&gt;
+&lt;p&gt;This is a set of csv files including a number of variables including fatal police shootings and other crime and socioeconomic covariates at different levels of geographical aggregation from 2013-2016. Five of the files use only the Washington Post data covering years 2015 and 2016, whereas the other five files utilize fatal police shootings of civilians for years 2013-2016, combining the Lott &amp;amp; Moody (2016) data for years 2013-2015 and Washington Post data for 2016. Other variables are included from the American Community Survey (ACS), the FBI’s Uniform Crime Reports (UCR), the Law Enforcement Management and Administrative Statistics (LEMAS), Stanford Education Data Archive (SEDA), the US Census, and the Local Area Unemployment Statistics (LAUS) provided by the Bureau of Labor Statistics (BLS).&lt;/p&gt;
+&lt;p&gt;The base file is the county-level data. The two files labelled “tenk” consist of regions with at least 10,000 residents. Counties with fewer than 10,000 residents are combined with adjacent counties, ranked by population in ascending order, so that counties with fewer than 10,000 residents are iteratively combined with adjacent neighbors with the fewest residents until they reach the threshold of 10,000 residents. The same algorithm is used to produce regions with 100,000 and 1 million residents. The final two files are state-level aggregations.&lt;/p&gt;
+&lt;p&gt;Link to figshare: &lt;a href=&#34;https://doi.org/10.6084/m9.figshare.5099536&#34; class=&#34;uri&#34;&gt;https://doi.org/10.6084/m9.figshare.5099536&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Link to RPubs: &lt;a href=&#34;http://rpubs.com/johnbradford/policeShootDataCreation&#34; class=&#34;uri&#34;&gt;http://rpubs.com/johnbradford/policeShootDataCreation&lt;/a&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -5,6 +5,24 @@
     
     <url>
     
+      <loc>/post/fatal-police-shootings-2013-2016-county-level-data/</loc>
+      <lastmod>2017-06-12T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/project/data_policeshooting/</loc>
+      <lastmod>2017-06-05T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/post/a-question-about-a-new-article-on-police-shootings/</loc>
       <lastmod>2017-05-19T00:00:00+00:00</lastmod>
     </url>
@@ -150,6 +168,16 @@
     
     <url>
     
+      <loc>/tags/black-lives-matter/</loc>
+      <lastmod>2017-06-12T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/categories/</loc>
       <priority>0</priority>
     </url>
@@ -169,6 +197,16 @@
     
     <url>
     
+      <loc>/tags/county-level-data/</loc>
+      <lastmod>2017-06-12T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/</loc>
       <lastmod>2016-04-20T00:00:00+00:00</lastmod>
       <priority>0</priority>
@@ -180,7 +218,7 @@
     <url>
     
       <loc>/tags/officer-involved-shootings/</loc>
-      <lastmod>2017-05-19T00:00:00+00:00</lastmod>
+      <lastmod>2017-06-12T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -190,7 +228,7 @@
     <url>
     
       <loc>/tags/police-involved-fatalities/</loc>
-      <lastmod>2017-05-19T00:00:00+00:00</lastmod>
+      <lastmod>2017-06-12T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -200,7 +238,17 @@
     <url>
     
       <loc>/tags/police-shooting/</loc>
-      <lastmod>2017-05-19T00:00:00+00:00</lastmod>
+      <lastmod>2017-06-12T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/police-shootings/</loc>
+      <lastmod>2017-06-05T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -210,7 +258,7 @@
     <url>
     
       <loc>/tags/police-use-of-force/</loc>
-      <lastmod>2017-05-19T00:00:00+00:00</lastmod>
+      <lastmod>2017-06-12T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -220,7 +268,7 @@
     <url>
     
       <loc>/project/</loc>
-      <lastmod>2017-05-07T00:00:00+00:00</lastmod>
+      <lastmod>2017-06-05T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
