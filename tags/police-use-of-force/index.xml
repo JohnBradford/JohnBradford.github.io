@@ -7,8 +7,268 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>&amp;copy; 2017 John Hamilton Bradford, Ph.D.</copyright>
-    <lastBuildDate>Mon, 12 Jun 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 11 Jul 2017 00:00:00 +0000</lastBuildDate>
     <atom:link href="/tags/police-use-of-force/" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>New Fatal Police Shooting Graphs - County Level</title>
+      <link>/post/new-fatal-police-shooting-graphs-county-level/</link>
+      <pubDate>Tue, 11 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/post/new-fatal-police-shooting-graphs-county-level/</guid>
+      <description>&lt;p&gt;I’ve made the following county-level graphs of fatal police shooting rates by race using data from the Census and compiled from the data I’ve now made available on figshare:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://doi.org/10.6084/m9.figshare.5099536.v8&#34;&gt;Bradford, John Hamilton (2017): Fatal Police Shootings (2013-2016) &amp;amp; County Level Data. figshare.&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;div id=&#34;i.-loading-data&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;I. Loading Data&lt;/h1&gt;
+&lt;div id=&#34;a-function-to-retrieve-state-abbreviations&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;1. A function to retrieve state abbreviations&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;getState.abb &amp;lt;- function(x){
+  ##remove punctuation and twim white space, convert to lower case
+  x &amp;lt;- tolower(trimws(gsub(&amp;quot;[[:punct:]]&amp;quot;, &amp;quot;&amp;quot;, x)))
+  x[which(x == &amp;quot;washington dc&amp;quot;)] &amp;lt;- &amp;quot;district of columbia&amp;quot;
+  
+  states.abb &amp;lt;- c(state.abb, &amp;quot;DC&amp;quot;, &amp;quot;DC&amp;quot;, &amp;quot;PR&amp;quot;)
+  states.name &amp;lt;- c(state.name, &amp;quot;District of Columbia&amp;quot;, &amp;quot;District of Columbia&amp;quot;, &amp;quot;Puerto Rico&amp;quot;)
+  
+  m.abb &amp;lt;- tolower(states.abb)
+  m.name &amp;lt;- tolower(gsub(&amp;quot;[[:punct:]]&amp;quot;, &amp;quot;&amp;quot;, states.name))
+  
+    x[which(x %in% m.abb)] &amp;lt;- states.abb[match(x[which(x %in% m.abb)] ,m.abb)]
+    x[which(x %in% m.name)] &amp;lt;- states.abb[match(x[which(x %in% m.name)],m.name)]
+
+  return(x)
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;load-national-census-population&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;2. Load National Census Population&lt;/h2&gt;
+&lt;p&gt;I could have just summed the county-level race population data to get aggregate, national estimates. But here’s another way to do it, directly. I’ll use these to annotate the graph.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(readr)
+library(dplyr)
+
+census_state &amp;lt;- readr::read_csv(&amp;quot;https://www2.census.gov/programs-surveys/popest/datasets/2010-2015/state/asrh/sc-est2015-alldata5.csv&amp;quot;)  
+
+df_nat &amp;lt;- census_state %&amp;gt;% 
+  dplyr::filter(SEX == 0) %&amp;gt;% ## selecting only 2015 data, renaming the columns
+  dplyr::transmute(State = NAME, Hisp = ORIGIN, Race = RACE, AGE = AGE, 
+                   population = POPESTIMATE2015) %&amp;gt;% 
+  dplyr::mutate(State = getState.abb(State), 
+                Race = replace(Race, which(Race == 1 &amp;amp; Hisp == 1), &amp;quot;White&amp;quot;), 
+                Race = replace(Race, which(Race == 1 &amp;amp; Hisp == 2), &amp;quot;Hispanic&amp;quot;), 
+                Race = replace(Race, which(Race == 2 &amp;amp; Hisp == 0), &amp;quot;Black&amp;quot;), 
+                Race = replace(Race, which(Race == 3 &amp;amp; Hisp == 0), &amp;quot;Native American&amp;quot;), 
+                Race = replace(Race, which(Race == 4 &amp;amp; Hisp == 0), &amp;quot;Asian&amp;quot;), 
+                Race = replace(Race, which(Race == 5 &amp;amp; Hisp == 0), &amp;quot;Asian&amp;quot;)) %&amp;gt;% 
+  dplyr::select(-c(Hisp)) %&amp;gt;% 
+  dplyr::filter(Race %in% c(&amp;quot;White&amp;quot;, &amp;quot;Hispanic&amp;quot;, &amp;quot;Black&amp;quot;, &amp;quot;Asian&amp;quot;, &amp;quot;Native American&amp;quot;)) %&amp;gt;% 
+  dplyr::group_by(Race) %&amp;gt;% ## Summing across all ages each race within each state
+  dplyr::summarise(population = sum(population, na.rm = T)) 
+
+knitr::kable(df_nat)&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;Race&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;population&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Asian&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;22500284&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Black&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;46282080&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Hispanic&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;51293572&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Native American&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6623941&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;White&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;203787565&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div id=&#34;load-county-level-population-and-police-fatality-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;3. Load County-Level Population and Police Fatality Data&lt;/h2&gt;
+&lt;p&gt;I’m retrieving these from two data files from the figshare dataset. The two files you’ll need are: &lt;code&gt;countyVars.csv&lt;/code&gt; and &lt;code&gt;killed_lott_wapo.csv&lt;/code&gt;. I’m aggregated the latter and combining with the previous national population estimates by race to get national fatality rates by race.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;countyVars &amp;lt;- fst::read.fst(path = choose.files())
+dfwl &amp;lt;- dplyr::left_join(countyVars, readr::read_csv(choose.files())) %&amp;gt;% dplyr::filter(pop.c.total_5yr &amp;gt; 
+    10000)
+
+killed_nat = dfwl %&amp;gt;% dplyr::mutate_at(vars(dplyr::contains(&amp;quot;killed&amp;quot;)), funs(replace(., 
+    is.na(.), 0))) %&amp;gt;% dplyr::summarise(White = sum(killed.white_nh, na.rm = T), 
+    Black = sum(killed.black, na.rm = T), Hispanic = sum(killed.hisp, na.rm = T), 
+    Asian = sum(killed.asian, na.rm = T), `Native American` = sum(killed.amerindian, 
+        na.rm = T)) %&amp;gt;% tidyr::gather(Race, Killed_nat) %&amp;gt;% dplyr::right_join(df_nat) %&amp;gt;% 
+    dplyr::group_by(Race) %&amp;gt;% dplyr::transmute(Killed_RateN = 1e+05 * Killed_nat/population)
+
+knitr::kable(killed_nat)&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;Race&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;Killed_RateN&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Asian&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.3288847&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Black&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.9424365&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Hispanic&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.1619390&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Native American&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.4227091&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;White&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.8135923&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div id=&#34;get-county-frequencies-by-race-join-national-rates&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;4. Get County Frequencies by Race, Join National Rates&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;dfCount &amp;lt;- dfwl %&amp;gt;% 
+  dplyr::mutate_at(vars(dplyr::contains(&amp;quot;killed&amp;quot;)), funs(replace(., is.na(.), 0))) %&amp;gt;% 
+  dplyr::transmute(
+    FIPS = FIPS,
+    ##Total = killed ,
+    White = killed.white_nh,
+    Black = killed.black ,
+    Hispanic = killed.hisp,
+    Asian = killed.asian,
+    `Native American` = killed.amerindian
+  ) %&amp;gt;% 
+  dplyr::group_by(FIPS) %&amp;gt;% 
+  tidyr::gather(Race, Killed, 2:6) %&amp;gt;% 
+  dplyr::ungroup() %&amp;gt;% 
+  dplyr::filter(!is.na(Race)) %&amp;gt;% 
+  dplyr::right_join(killed_nat, by=&amp;quot;Race&amp;quot;) %&amp;gt;% 
+  dplyr::mutate(Race = factor(Race, levels = c( &amp;quot;White&amp;quot;, &amp;quot;Black&amp;quot;, &amp;quot;Hispanic&amp;quot;, &amp;quot;Asian&amp;quot;, &amp;quot;Native American&amp;quot;))) %&amp;gt;% 
+  dplyr::group_by(FIPS, Race)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;create-the-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;5. Create the Data!&lt;/h2&gt;
+&lt;p&gt;This is the final step, which generates every variable we’ll use to create the next graph.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;df &amp;lt;- dfwl %&amp;gt;% 
+  dplyr::mutate_at(vars(dplyr::contains(&amp;quot;killed&amp;quot;)), funs(replace(., is.na(.), 0))) %&amp;gt;% 
+  dplyr::mutate(
+    State = getState.abb(state),
+    County = gsub(pattern = &amp;quot;County&amp;quot;, replacement =&amp;quot;&amp;quot;, x=county),
+    County = trimws(County)
+  ) %&amp;gt;% 
+  dplyr::transmute(
+    address = paste0(County, &amp;quot;, &amp;quot;, State),
+    FIPS = FIPS,
+    ##Total = 10e04*killed / pop.c.total_5yr,
+    White = 10e04*killed.white_nh / pop.c.white_nh_5yr,
+    Black = 10e04*killed.black / pop.c.black_5yr,
+    Hispanic = 10e04*killed.hisp / pop.c.hispanic_5yr,
+    Asian = 10e04*killed.asian / pop.c.asian_5yr,
+    `Native American` = 10e04*killed.amerindian/pop.c.amerindian_5yr
+  ) %&amp;gt;% 
+  dplyr::group_by(FIPS) %&amp;gt;% 
+  tidyr::gather(Race, KilledR, 3:7) %&amp;gt;% 
+  dplyr::ungroup() %&amp;gt;% 
+  dplyr::filter(!is.na(Race)) %&amp;gt;% 
+  dplyr::mutate(Race = factor(Race, levels = c(&amp;quot;White&amp;quot;, &amp;quot;Black&amp;quot;, &amp;quot;Hispanic&amp;quot;, &amp;quot;Asian&amp;quot;, &amp;quot;Native American&amp;quot;))) %&amp;gt;% 
+  dplyr::filter(!is.na(Race)) %&amp;gt;% 
+  dplyr::group_by(Race) %&amp;gt;% 
+  dplyr::mutate(KilledR_mean = mean(KilledR, na.rm = T), 
+                n_zero = length(FIPS[which(KilledR&amp;gt;0)])) %&amp;gt;% 
+  dplyr::left_join(dfCount, by=c(&amp;quot;FIPS&amp;quot;, &amp;quot;Race&amp;quot;)) %&amp;gt;% 
+  dplyr::mutate(Killed_Race = sum(Killed))&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ii.-graph&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;II. GRAPH&lt;/h1&gt;
+&lt;p&gt;Below is the graph.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(ggplot2)
+library(ggsci)
+library(ggthemes)
+#library(ggrepel)
+
+
+ggplot(data = subset(df, KilledR &amp;gt; 0 &amp;amp; Race != &amp;quot;Total&amp;quot;), 
+       aes(x = Race, y = KilledR, color = Race, fill = Race, 
+                      shape = Race)) + 
+  geom_boxplot(alpha = 0.5, position = &amp;quot;dodge&amp;quot;, color = &amp;quot;black&amp;quot;) + 
+  geom_dotplot(alpha = 0.5, position = &amp;quot;dodge&amp;quot;, 
+               color = &amp;quot;black&amp;quot;, 
+               binaxis = &amp;quot;y&amp;quot;, 
+               stackdir = &amp;quot;centerwhole&amp;quot;, dotsize = 1, binwidth = 0.05) + 
+  xlab(&amp;quot;Data from Lott &amp;amp; Moody (2013-2015), Washington Post (2016), and US Census 5-year county population averages (2011-2015)&amp;quot;) +
+  ylab(label = &amp;quot;Fatalities per 100,000 Civilians by Race&amp;quot;) + 
+  
+  
+  ##legend
+  geom_label(aes( x = 0.99, y = 1000, label = &amp;quot;County  Mean &amp;quot;), 
+              size = 3.5, 
+             fill = &amp;quot;lightgray&amp;quot;, alpha = 0.1, 
+             color = &amp;quot;black&amp;quot;, 
+             hjust = 1) + 
+  
+  geom_label(aes( x = 1.01, y = 1000, label = &amp;quot;National Rate&amp;quot;), 
+             size = 3.5, 
+             fill = &amp;quot;antiquewhite&amp;quot;, alpha = 0.1, 
+             color = &amp;quot;black&amp;quot;, 
+             hjust = 0) + 
+  
+  geom_label(aes(x = Race, y = KilledR_mean, group = Race, 
+                 label = paste0(round(KilledR_mean, 2))), size = 3.5, 
+             fill = &amp;quot;lightgray&amp;quot;, alpha = 0.1, 
+             color = &amp;quot;black&amp;quot;, 
+             hjust = 1,
+             position = position_dodge(width = 0.9)) + 
+  
+  
+  geom_label(aes(x = Race, y = Killed_RateN, group = Race, 
+                 label = paste0(round(Killed_RateN, 2))), size = 3.5, 
+             fill = &amp;quot;antiquewhite&amp;quot;, alpha = 0.1, 
+             color = &amp;quot;black&amp;quot;, 
+             hjust=0,
+             position = position_dodge(width = 0.9)) + 
+  
+  ggsci::scale_fill_d3(palette = &amp;quot;category10&amp;quot;) + 
+  ggsci::scale_color_d3(palette = &amp;quot;category10&amp;quot;) + 
+  theme_gdocs() + 
+  theme(plot.title = element_text(size = 12,face = &amp;quot;bold&amp;quot;), 
+        plot.subtitle = element_text(size=10),
+        legend.position = c(0.12, 0.9), 
+        legend.text = element_text(size = 12, face = &amp;quot;bold&amp;quot;), 
+        legend.background = element_rect(fill = alpha(&amp;quot;gray&amp;quot;, 0.2)), 
+        axis.title.y = element_text(size = 11, face=&amp;quot;plain&amp;quot;), 
+        axis.title.x = element_text(size = 10, face=&amp;quot;plain&amp;quot;),
+        axis.text = element_text(size = 12, face=&amp;quot;bold&amp;quot;)) + 
+  guides(size = FALSE, stat = FALSE, fill = FALSE, shape = FALSE, color = FALSE) + 
+  ggtitle(label = &amp;quot;County Fatal Police Shooting Rates by Race (2013-2016)&amp;quot;, 
+          subtitle= &amp;quot;Plot depicts only counties with at least 1 fatal shooting incident.  Estimates only include counties with at least 10,000 Residents.\nSource: johnbradford.github.io&amp;quot;) +
+  scale_y_log10(breaks = c(.1, 1, 10, 100, 1000), 
+                labels=c(&amp;quot;0.1&amp;quot;, &amp;quot;1&amp;quot;,&amp;quot;10&amp;quot;, &amp;quot;100&amp;quot;, &amp;quot;1000&amp;quot;)) +
+  geom_text( aes(y=.01, group=Race, x=Race, 
+                 label=paste0(&amp;quot;N=&amp;quot;, n_zero, &amp;quot;\n&amp;quot;, &amp;quot;Fatalities=&amp;quot;, Killed_Race)), 
+             color=&amp;quot;black&amp;quot;) &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2017-07-11-new-fatal-police-shooting-graphs-county-level_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;1152&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+</description>
+    </item>
     
     <item>
       <title>Fatal Police Shootings (2013-2016) &amp; County Level Data</title>
