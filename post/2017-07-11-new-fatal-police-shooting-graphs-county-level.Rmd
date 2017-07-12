@@ -17,6 +17,10 @@ I've made the following county-level graphs of fatal police shooting rates by ra
 
 > [Bradford, John Hamilton (2017): Fatal Police Shootings (2013-2016) & County Level Data. figshare.](https://doi.org/10.6084/m9.figshare.5099536.v8)
 
+Below is the graph. 
+![HERE](/img/policeShoot/Boxplot_FatalRates_County.png)
+
+
 #I.  Loading Data
 ##1. A function to retrieve state abbreviations
 ```{r}
@@ -154,7 +158,7 @@ df <- dfwl %>%
 
 
 #II.  GRAPH
-Below is the graph. 
+
 
 ```{r, fig.width=12}
 

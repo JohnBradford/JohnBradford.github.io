@@ -20,6 +20,7 @@
 &lt;blockquote&gt;
 &lt;p&gt;&lt;a href=&#34;https://doi.org/10.6084/m9.figshare.5099536.v8&#34;&gt;Bradford, John Hamilton (2017): Fatal Police Shootings (2013-2016) &amp;amp; County Level Data. figshare.&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
+&lt;p&gt;Below is the graph. &lt;img src=&#34;/img/policeShoot/Boxplot_FatalRates_County.png&#34; alt=&#34;HERE&#34; /&gt;&lt;/p&gt;
 &lt;div id=&#34;i.-loading-data&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;I. Loading Data&lt;/h1&gt;
 &lt;div id=&#34;a-function-to-retrieve-state-abbreviations&#34; class=&#34;section level2&#34;&gt;
@@ -199,7 +200,6 @@ knitr::kable(killed_nat)&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;div id=&#34;ii.-graph&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;II. GRAPH&lt;/h1&gt;
-&lt;p&gt;Below is the graph.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(ggplot2)
 library(ggsci)
 library(ggthemes)
