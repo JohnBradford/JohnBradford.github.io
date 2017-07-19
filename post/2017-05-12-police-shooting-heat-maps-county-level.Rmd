@@ -13,10 +13,10 @@ tags:
 
  Below are some new county-level heat maps of police shooting data, compiled from the Lott & Moody (2016) data for years 2013-2015, and the Washington Post for 2016.  Below the graphs, the R code is provided.
 
-![Figure 1.  Frequency of Civilians Killed by Police per County](/img/policeShoot/map_county_frequency_1366_768.png)
+![Figure 1.  Frequency of Civilians Killed by Police per County](/img/policeShoot/SVG_map_counts_c_10x6.svg)
 
 
-![Figure 2.  Civilians Killed by Police per 100,000 Residents](/img/policeShoot/map_county_rate_1366_768.png)
+![Figure 2.  Civilians Killed by Police per 100,000 Residents](/img/policeShoot/SVG_map_rates_c_10x6.svg)
 
 ![Figure 3.  Killed by Police Rates for Larger Counties](/img/policeShoot/map_county_rate_1366_768.png)
 

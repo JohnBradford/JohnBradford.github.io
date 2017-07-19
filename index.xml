@@ -1904,11 +1904,11 @@ geom_boxplot(alpha = 0.5, position = &amp;quot;dodge&amp;quot;, color = &amp;quo
       <guid>/post/police-shooting-heat-maps-county-level/</guid>
       <description>&lt;p&gt;Below are some new county-level heat maps of police shooting data, compiled from the Lott &amp;amp; Moody (2016) data for years 2013-2015, and the Washington Post for 2016. Below the graphs, the R code is provided.&lt;/p&gt;
 &lt;div class=&#34;figure&#34;&gt;
-&lt;img src=&#34;/img/policeShoot/map_county_frequency_1366_768.png&#34; alt=&#34;Figure 1. Frequency of Civilians Killed by Police per County&#34; /&gt;
+&lt;img src=&#34;/img/policeShoot/SVG_map_counts_c_10x6.svg&#34; alt=&#34;Figure 1. Frequency of Civilians Killed by Police per County&#34; /&gt;
 &lt;p class=&#34;caption&#34;&gt;Figure 1. Frequency of Civilians Killed by Police per County&lt;/p&gt;
 &lt;/div&gt;
 &lt;div class=&#34;figure&#34;&gt;
-&lt;img src=&#34;/img/policeShoot/map_county_rate_1366_768.png&#34; alt=&#34;Figure 2. Civilians Killed by Police per 100,000 Residents&#34; /&gt;
+&lt;img src=&#34;/img/policeShoot/SVG_map_rates_c_10x6.svg&#34; alt=&#34;Figure 2. Civilians Killed by Police per 100,000 Residents&#34; /&gt;
 &lt;p class=&#34;caption&#34;&gt;Figure 2. Civilians Killed by Police per 100,000 Residents&lt;/p&gt;
 &lt;/div&gt;
 &lt;div class=&#34;figure&#34;&gt;
