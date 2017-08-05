@@ -1,0 +1,180 @@
+---
+title: Web Scraping Experiment
+author: John Hamilton Bradford
+date: '2017-08-05'
+slug: web-scraping-experiment
+categories: []
+tags:
+  - web scrape
+  - web content
+  - web scraping
+  - web content mining
+---
+
+This is an attempt to collect meta-data from links to academic articles.  There are several R packages for both web crawling and data extraction, including [Rcrawler](https://github.com/salimk/Rcrawler/), [rvest](https://github.com/hadley/rvest), and [scrapeR](https://cran.r-project.org/web/packages/scrapeR/).  Among these, only `RCrawler` has capabilities for both data extraction and web crawling.   I won't need to make use of the latter functionality here, since I already have a list of url's that need to be mined.  Instead, I'm mostly interested in *web usage mining* and *web content mining*, the extraction of "valuable information from web content" [(Khalil and Fakir 2017)](http://www.sciencedirect.com/science/article/pii/S2352711017300110).
+
+Below I attemp to extract the title of an article in *The American Journal of Sociology* (AJS) from both the publisher's url and from a jstor link to the article's abstract.  I also try to extract the title from an open access jstor link to an ebook.  Although I could access abstracts from public jstor links, I wasn't able to extract data from jstor links using a proxy campus login, neither the abstracts nor the actual articles that are behind a paywall.  Since I'm not on a college campus, I wasn't be able to test whether data can be extracted from jstor links from a location that doesn't require a proxy login.  
+
+The links I'll be using are as follows:
+ 
+ * [The Control of Managerial Discretion: Evidence from Unionization’s Impact on Employment Segregation](http://www.journals.uchicago.edu/doi/full/10.1086/683357), *American Journal of Sociology* publisher's site.
+ * [The Control of Managerial Discretion: Evidence from Unionization’s Impact on Employment Segregation](https://www.jstor.org/stable/10.1086/683357), *American Journal of Sociology* Jstor link to abstract.
+ * [Social Media in Rural China](http://www.jstor.org/stable/j.ctt1g69xx3), the jstor link to an open access ebook.  
+
+
+##1.  Storing the Links
+
+```{r}
+
+ajs <- "http://www.journals.uchicago.edu/doi/full/10.1086/683357"
+jstor <- "https://www.jstor.org/stable/10.1086/683357"
+jstor_book <- "http://www.jstor.org/stable/j.ctt1g69xx3"
+
+
+```
+
+
+##2.  Using the Rcrawler Package
+
+Below I use the `LinkExtractor` and `ContentScraper` functions from the `Rcrawler` package.  The `ContentScraper` function takes a *webpage* argument, a *patterns* argument, and a *patname* argument.  The *webpage* is a a character vector created from the `LinkExtractor` function.  The *patterns* argument uses *XPath* patterns.  Since, I didn't know what XPaths were, I had to read a short tutorial on the web.  After some tinkering, I found that the expression `//*/title` extracted the title I was looking for.  But this would likely be different depending on the website layour of the vendor or publisher.  
+
+Also, the `LinkExtractor` function returns a list.  It isn't clear to me how this list is ordered but in every case, the title is contained somewhere in the 10th element of the first element, hence the brackets `[[1]][[10]]` are used.
+
+```{r, tidy=TRUE, warning=FALSE, message=FALSE}
+##Installing the Rcrawler package if not already installed
+if("Rcrawler" %in% rownames(installed.packages()) == FALSE) {install.packages("Rcrawler")}
+require(Rcrawler)
+
+pageInfo <- LinkExtractor(url = ajs)
+Data <- ContentScraper(pageInfo[[1]][[10]], "//*/title","title")
+Data
+
+pageInfo2 <- LinkExtractor(url = jstor)
+Data2 <- ContentScraper(pageInfo2[[1]][[10]], "//*/title","title")
+Data2
+
+pageInfo3 <- LinkExtractor(url = jstor_book)
+Data3 <- ContentScraper(pageInfo3[[1]][[10]], "//*/title","title")
+Data3
+
+
+
+```
+
+Next, I wrote a short function to extract data from all three pages.
+```{r, tidyr=TRUE, message=FALSE}
+pages <- list(ajs, jstor, jstor_book)
+getContent <- function(x){
+  link_char <- character(0)
+  L <- length(x)
+  for(i in seq_along(x)){
+    y <- LinkExtractor(x[[i]])
+    y2 <- ContentScraper(y[[1]][[10]], "//*/title","Title") %>% unlist()
+    link_char <- c(link_char, y2)
+  }
+  return(link_char)
+}
+
+y <- getContent(pages)
+y
+
+```
+
+##3. Using rvest package
+
+Using the `rvest` package requires three steps.  First, the `read_html` function from the `xml2` package is used to extract the entire webpage.  Second, the `html_nodes` function from the rvest package extracts a specific component of the webpage, using either the arguments `css` or `xpath`.  The `xpath` argument would use XPath syntax, such as what I used above.  Below I use the `css` selector instead.  To find the css selector, I use a nice chrome plugin called [Selector Gadget](http://selectorgadget.com/).  A tutorial on how to use this tool and the rvest package to harvest web data can be found [HERE](https://stat4701.github.io/edav/2015/04/02/rvest_tutorial/).  For the *AJS* publisher's site and the Jstor link, the title can be found using the css selector `.publicationContentTitle h1`.  For the jstor ebook, the title can be found using the css selector `#content .mbs`
+
+###AJS publisher's website
+```{r, tidy=TRUE}
+##Installing the rvest package if not already installed
+if("rvest" %in% rownames(installed.packages()) == FALSE) {install.packages("rvest")}
+require(rvest)
+
+#Step 1
+ajs_page <- xml2::read_html(ajs)
+#Step 2 - Using CSS selectors to scrap title
+ajs_css <- html_nodes(ajs_page,'.publicationContentTitle h1')
+#Step 3 - Converting title data to text
+ajs_title <- html_text(ajs_css)
+ajs_title
+
+```
+
+###Jstor link to abstract
+The following code doesn't work.  A 403 error is returned on the first step.  This is probably because it is against JSTOR's terms of service.  It is likely that an API would be required.  I also tried this using a proxy login and that didn't work either.  Since I wasn't on a college campus, I couldn't test whether it would work without using a login from a location which has direct access to the Jstor content.  Also note that the link is to an abstract only, not the material behind the paywall.
+
+```{r, tidy=TRUE, eval=FALSE, warning=FALSE, comment=FALSE}
+
+#Step 1
+jstor_page <- xml2::read_html(jstor)
+#Step 2 - Using CSS selectors to scrap title
+jstor_css <- html_nodes(jstor_page,'.publicationContentTitle h1')
+#Step 3 - Converting title data to text
+jstor_title <- html_text(jstor_css)
+jstor_title
+
+```
+
+###Jstor link to open access e-book
+The same problem occurs below. I never got past the first line of code.  JSTOR doesn't allow webscraping of their content, even if its open access and not behind a paywall.  I'm not sure why the `Rcrawler` package worked and the `rvest` package did not.
+
+```{r, tidy=TRUE, eval=FALSE, warning=FALSE, comment=FALSE}
+
+#Step 1
+book_page <- xml2::read_html(jstor_book)
+#Step 2 - Using CSS selectors to scrap title
+book_css <- html_nodes(book_page,'.mbs')
+#Step 3 - Converting title data to text
+book_title <- html_text(book_css)
+book_title
+
+
+```
+
+
+##4.  Using the scrapeR package
+
+The `scrapeR` package uses the function `scrape` in conjunction with the `xml` function `xPathSApply`.  The code itself is somewhat inscrutable to me at the moment. 
+
+Also, at this point, I realized that the publisher had blocked my url.  This is something to keep in mind. I had to switch to a proxy url to test the following code.    
+
+###AJS publisher's website
+I could not get this to work.  I tried setting the `follow` argument to `TRUE` and the `parse` argument to `FALSE` but the content extracted from the `scrape` function did not seem to contain any meta-data for the article.  I also tried using different XPath codes, and printed out the entire content scraped the webpage.
+
+I tried using different proxy url's and ensured that my url was not being blocked, so I don't know what's going on with this.
+
+```{r, tidy=TRUE, warning=FALSE}
+
+##Installing the scrapeR package if not already installed
+if("scrapeR" %in% rownames(installed.packages()) == FALSE) {install.packages("scrapeR")}
+require(scrapeR)
+
+ajs_scrape <- scrape(url=ajs, follow=TRUE)
+
+xpathSApply(ajs_scrape[[1]], "//*/title")
+
+```
+
+###Jstor link to abstract
+Somehow, the JSTOR link DID work.  
+```{r, tidy=TRUE}
+
+jstor_scrape <- scrape(url=jstor, follow=TRUE)
+
+xpathSApply(jstor_scrape[[1]], "//*/title")
+
+```
+
+###Jstor link to open access e-book
+This also worked.
+
+```{r, tidy=TRUE}
+
+jstor_book <- scrape(url=jstor_book, follow=TRUE)
+
+xpathSApply(jstor_book[[1]], "//*/title")
+
+```
+
+
+

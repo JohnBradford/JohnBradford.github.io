@@ -92,5 +92,41 @@
       <description></description>
     </item>
     
+    <item>
+      <title>Web Content</title>
+      <link>/tags/web-content/</link>
+      <pubDate>Sat, 05 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/web-content/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Web Content Mining</title>
+      <link>/tags/web-content-mining/</link>
+      <pubDate>Sat, 05 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/web-content-mining/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Web Scrape</title>
+      <link>/tags/web-scrape/</link>
+      <pubDate>Sat, 05 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/web-scrape/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Web Scraping</title>
+      <link>/tags/web-scraping/</link>
+      <pubDate>Sat, 05 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/web-scraping/</guid>
+      <description></description>
+    </item>
+    
   </channel>
 </rss>

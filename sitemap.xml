@@ -5,6 +5,15 @@
     
     <url>
     
+      <loc>/post/web-scraping-experiment/</loc>
+      <lastmod>2017-08-05T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/post/new-fatal-police-shooting-graphs-county-level/</loc>
       <lastmod>2017-07-11T00:00:00+00:00</lastmod>
     </url>
@@ -316,6 +325,46 @@
     
       <loc>/tags/</loc>
       <lastmod>2017-01-01T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/web-content/</loc>
+      <lastmod>2017-08-05T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/web-content-mining/</loc>
+      <lastmod>2017-08-05T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/web-scrape/</loc>
+      <lastmod>2017-08-05T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/web-scraping/</loc>
+      <lastmod>2017-08-05T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     

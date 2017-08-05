@@ -11,6 +11,181 @@
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Web Scraping Experiment</title>
+      <link>/post/web-scraping-experiment/</link>
+      <pubDate>Sat, 05 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/post/web-scraping-experiment/</guid>
+      <description>&lt;p&gt;This is an attempt to collect meta-data from links to academic articles. There are several R packages for both web crawling and data extraction, including &lt;a href=&#34;https://github.com/salimk/Rcrawler/&#34;&gt;Rcrawler&lt;/a&gt;, &lt;a href=&#34;https://github.com/hadley/rvest&#34;&gt;rvest&lt;/a&gt;, and &lt;a href=&#34;https://cran.r-project.org/web/packages/scrapeR/&#34;&gt;scrapeR&lt;/a&gt;. Among these, only &lt;code&gt;RCrawler&lt;/code&gt; has capabilities for both data extraction and web crawling. I won’t need to make use of the latter functionality here, since I already have a list of url’s that need to be mined. Instead, I’m mostly interested in &lt;em&gt;web usage mining&lt;/em&gt; and &lt;em&gt;web content mining&lt;/em&gt;, the extraction of “valuable information from web content” &lt;a href=&#34;http://www.sciencedirect.com/science/article/pii/S2352711017300110&#34;&gt;(Khalil and Fakir 2017)&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Below I attemp to extract the title of an article in &lt;em&gt;The American Journal of Sociology&lt;/em&gt; (AJS) from both the publisher’s url and from a jstor link to the article’s abstract. I also try to extract the title from an open access jstor link to an ebook. Although I could access abstracts from public jstor links, I wasn’t able to extract data from jstor links using a proxy campus login, neither the abstracts nor the actual articles that are behind a paywall. Since I’m not on a college campus, I wasn’t be able to test whether data can be extracted from jstor links from a location that doesn’t require a proxy login.&lt;/p&gt;
+&lt;p&gt;The links I’ll be using are as follows:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.journals.uchicago.edu/doi/full/10.1086/683357&#34;&gt;The Control of Managerial Discretion: Evidence from Unionization’s Impact on Employment Segregation&lt;/a&gt;, &lt;em&gt;American Journal of Sociology&lt;/em&gt; publisher’s site.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.jstor.org/stable/10.1086/683357&#34;&gt;The Control of Managerial Discretion: Evidence from Unionization’s Impact on Employment Segregation&lt;/a&gt;, &lt;em&gt;American Journal of Sociology&lt;/em&gt; Jstor link to abstract.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.jstor.org/stable/j.ctt1g69xx3&#34;&gt;Social Media in Rural China&lt;/a&gt;, the jstor link to an open access ebook.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div id=&#34;storing-the-links&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;1. Storing the Links&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ajs &amp;lt;- &amp;quot;http://www.journals.uchicago.edu/doi/full/10.1086/683357&amp;quot;
+jstor &amp;lt;- &amp;quot;https://www.jstor.org/stable/10.1086/683357&amp;quot;
+jstor_book &amp;lt;- &amp;quot;http://www.jstor.org/stable/j.ctt1g69xx3&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;using-the-rcrawler-package&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;2. Using the Rcrawler Package&lt;/h2&gt;
+&lt;p&gt;Below I use the &lt;code&gt;LinkExtractor&lt;/code&gt; and &lt;code&gt;ContentScraper&lt;/code&gt; functions from the &lt;code&gt;Rcrawler&lt;/code&gt; package. The &lt;code&gt;ContentScraper&lt;/code&gt; function takes a &lt;em&gt;webpage&lt;/em&gt; argument, a &lt;em&gt;patterns&lt;/em&gt; argument, and a &lt;em&gt;patname&lt;/em&gt; argument. The &lt;em&gt;webpage&lt;/em&gt; is a a character vector created from the &lt;code&gt;LinkExtractor&lt;/code&gt; function. The &lt;em&gt;patterns&lt;/em&gt; argument uses &lt;em&gt;XPath&lt;/em&gt; patterns. Since, I didn’t know what XPaths were, I had to read a short tutorial on the web. After some tinkering, I found that the expression &lt;code&gt;//*/title&lt;/code&gt; extracted the title I was looking for. But this would likely be different depending on the website layour of the vendor or publisher.&lt;/p&gt;
+&lt;p&gt;Also, the &lt;code&gt;LinkExtractor&lt;/code&gt; function returns a list. It isn’t clear to me how this list is ordered but in every case, the title is contained somewhere in the 10th element of the first element, hence the brackets &lt;code&gt;[[1]][[10]]&lt;/code&gt; are used.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;## Installing the Rcrawler package if not already installed
+if (&amp;quot;Rcrawler&amp;quot; %in% rownames(installed.packages()) == FALSE) {
+    install.packages(&amp;quot;Rcrawler&amp;quot;)
+}
+require(Rcrawler)
+
+pageInfo &amp;lt;- LinkExtractor(url = ajs)
+Data &amp;lt;- ContentScraper(pageInfo[[1]][[10]], &amp;quot;//*/title&amp;quot;, &amp;quot;title&amp;quot;)
+Data&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## $title
+## [1] &amp;quot;The Control of Managerial Discretion: Evidence from                     Unionizations Impact on Employment Segregation: American Journal of Sociology: Vol 121, No 3&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;pageInfo2 &amp;lt;- LinkExtractor(url = jstor)
+Data2 &amp;lt;- ContentScraper(pageInfo2[[1]][[10]], &amp;quot;//*/title&amp;quot;, &amp;quot;title&amp;quot;)
+Data2&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## $title
+## [1] &amp;quot;The Control of Managerial Discretion: Evidence from Unionizations Impact on Employment Segregation on JSTOR&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;pageInfo3 &amp;lt;- LinkExtractor(url = jstor_book)
+Data3 &amp;lt;- ContentScraper(pageInfo3[[1]][[10]], &amp;quot;//*/title&amp;quot;, &amp;quot;title&amp;quot;)
+Data3&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## $title
+## [1] &amp;quot;Social Media in Rural China on JSTOR&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Next, I wrote a short function to extract data from all three pages.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;pages &amp;lt;- list(ajs, jstor, jstor_book)
+getContent &amp;lt;- function(x){
+  link_char &amp;lt;- character(0)
+  L &amp;lt;- length(x)
+  for(i in seq_along(x)){
+    y &amp;lt;- LinkExtractor(x[[i]])
+    y2 &amp;lt;- ContentScraper(y[[1]][[10]], &amp;quot;//*/title&amp;quot;,&amp;quot;Title&amp;quot;) %&amp;gt;% unlist()
+    link_char &amp;lt;- c(link_char, y2)
+  }
+  return(link_char)
+}
+
+y &amp;lt;- getContent(pages)
+y&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##                                                                                                                                                                   Title 
+## &amp;quot;The Control of Managerial Discretion: Evidence from                     Unionizations Impact on Employment Segregation: American Journal of Sociology: Vol 121, No 3&amp;quot; 
+##                                                                                                                                                                   Title 
+##                                                          &amp;quot;The Control of Managerial Discretion: Evidence from Unionizations Impact on Employment Segregation on JSTOR&amp;quot; 
+##                                                                                                                                                                   Title 
+##                                                                                                                                  &amp;quot;Social Media in Rural China on JSTOR&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;using-rvest-package&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;3. Using rvest package&lt;/h2&gt;
+&lt;p&gt;Using the &lt;code&gt;rvest&lt;/code&gt; package requires three steps. First, the &lt;code&gt;read_html&lt;/code&gt; function from the &lt;code&gt;xml2&lt;/code&gt; package is used to extract the entire webpage. Second, the &lt;code&gt;html_nodes&lt;/code&gt; function from the rvest package extracts a specific component of the webpage, using either the arguments &lt;code&gt;css&lt;/code&gt; or &lt;code&gt;xpath&lt;/code&gt;. The &lt;code&gt;xpath&lt;/code&gt; argument would use XPath syntax, such as what I used above. Below I use the &lt;code&gt;css&lt;/code&gt; selector instead. To find the css selector, I use a nice chrome plugin called &lt;a href=&#34;http://selectorgadget.com/&#34;&gt;Selector Gadget&lt;/a&gt;. A tutorial on how to use this tool and the rvest package to harvest web data can be found &lt;a href=&#34;https://stat4701.github.io/edav/2015/04/02/rvest_tutorial/&#34;&gt;HERE&lt;/a&gt;. For the &lt;em&gt;AJS&lt;/em&gt; publisher’s site and the Jstor link, the title can be found using the css selector &lt;code&gt;.publicationContentTitle h1&lt;/code&gt;. For the jstor ebook, the title can be found using the css selector &lt;code&gt;#content .mbs&lt;/code&gt;&lt;/p&gt;
+&lt;div id=&#34;ajs-publishers-website&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;AJS publisher’s website&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;## Installing the rvest package if not already installed
+if (&amp;quot;rvest&amp;quot; %in% rownames(installed.packages()) == FALSE) {
+    install.packages(&amp;quot;rvest&amp;quot;)
+}
+require(rvest)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Loading required package: rvest&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Loading required package: xml2&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+## Attaching package: &amp;#39;rvest&amp;#39;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## The following object is masked from &amp;#39;package:readr&amp;#39;:
+## 
+##     guess_encoding&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Step 1
+ajs_page &amp;lt;- xml2::read_html(ajs)
+# Step 2 - Using CSS selectors to scrap title
+ajs_css &amp;lt;- html_nodes(ajs_page, &amp;quot;.publicationContentTitle h1&amp;quot;)
+# Step 3 - Converting title data to text
+ajs_title &amp;lt;- html_text(ajs_css)
+ajs_title&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;The Control of Managerial Discretion: Evidence from Unionizations Impact on Employment Segregation1&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;jstor-link-to-abstract&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Jstor link to abstract&lt;/h3&gt;
+&lt;p&gt;The following code doesn’t work. A 403 error is returned on the first step. This is probably because it is against JSTOR’s terms of service. It is likely that an API would be required. I also tried this using a proxy login and that didn’t work either. Since I wasn’t on a college campus, I couldn’t test whether it would work without using a login from a location which has direct access to the Jstor content. Also note that the link is to an abstract only, not the material behind the paywall.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Step 1
+jstor_page &amp;lt;- xml2::read_html(jstor)
+# Step 2 - Using CSS selectors to scrap title
+jstor_css &amp;lt;- html_nodes(jstor_page, &amp;quot;.publicationContentTitle h1&amp;quot;)
+# Step 3 - Converting title data to text
+jstor_title &amp;lt;- html_text(jstor_css)
+jstor_title&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;jstor-link-to-open-access-e-book&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Jstor link to open access e-book&lt;/h3&gt;
+&lt;p&gt;The same problem occurs below. I never got past the first line of code. JSTOR doesn’t allow webscraping of their content, even if its open access and not behind a paywall. I’m not sure why the &lt;code&gt;Rcrawler&lt;/code&gt; package worked and the &lt;code&gt;rvest&lt;/code&gt; package did not.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Step 1
+book_page &amp;lt;- xml2::read_html(jstor_book)
+# Step 2 - Using CSS selectors to scrap title
+book_css &amp;lt;- html_nodes(book_page, &amp;quot;.mbs&amp;quot;)
+# Step 3 - Converting title data to text
+book_title &amp;lt;- html_text(book_css)
+book_title&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;using-the-scraper-package&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;4. Using the scrapeR package&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;scrapeR&lt;/code&gt; package uses the function &lt;code&gt;scrape&lt;/code&gt; in conjunction with the &lt;code&gt;xml&lt;/code&gt; function &lt;code&gt;xPathSApply&lt;/code&gt;. The code itself is somewhat inscrutable to me at the moment.&lt;/p&gt;
+&lt;p&gt;Also, at this point, I realized that the publisher had blocked my url. This is something to keep in mind. I had to switch to a proxy url to test the following code.&lt;/p&gt;
+&lt;div id=&#34;ajs-publishers-website-1&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;AJS publisher’s website&lt;/h3&gt;
+&lt;p&gt;I could not get this to work. I tried setting the &lt;code&gt;follow&lt;/code&gt; argument to &lt;code&gt;TRUE&lt;/code&gt; and the &lt;code&gt;parse&lt;/code&gt; argument to &lt;code&gt;FALSE&lt;/code&gt; but the content extracted from the &lt;code&gt;scrape&lt;/code&gt; function did not seem to contain any meta-data for the article. I also tried using different XPath codes, and printed out the entire content scraped the webpage.&lt;/p&gt;
+&lt;p&gt;I tried using different proxy url’s and ensured that my url was not being blocked, so I don’t know what’s going on with this.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;## Installing the scrapeR package if not already installed
+if (&amp;quot;scrapeR&amp;quot; %in% rownames(installed.packages()) == FALSE) {
+    install.packages(&amp;quot;scrapeR&amp;quot;)
+}
+require(scrapeR)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Loading required package: scrapeR&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Loading required package: XML&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+## Attaching package: &amp;#39;XML&amp;#39;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## The following object is masked from &amp;#39;package:rvest&amp;#39;:
+## 
+##     xml&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Loading required package: RCurl&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Loading required package: bitops&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+## Attaching package: &amp;#39;RCurl&amp;#39;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## The following object is masked from &amp;#39;package:tidyr&amp;#39;:
+## 
+##     complete&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ajs_scrape &amp;lt;- scrape(url = ajs, follow = TRUE)
+
+xpathSApply(ajs_scrape[[1]], &amp;quot;//*/title&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [[1]]
+## &amp;lt;title/&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;jstor-link-to-abstract-1&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Jstor link to abstract&lt;/h3&gt;
+&lt;p&gt;Somehow, the JSTOR link DID work.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;jstor_scrape &amp;lt;- scrape(url = jstor, follow = TRUE)
+
+xpathSApply(jstor_scrape[[1]], &amp;quot;//*/title&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [[1]]
+## &amp;lt;title&amp;gt;
+##     The Control of Managerial Discretion: Evidence from Unionizations Impact on Employment Segregation on JSTOR
+## &amp;lt;/title&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;jstor-link-to-open-access-e-book-1&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Jstor link to open access e-book&lt;/h3&gt;
+&lt;p&gt;This also worked.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;jstor_book &amp;lt;- scrape(url = jstor_book, follow = TRUE)
+
+xpathSApply(jstor_book[[1]], &amp;quot;//*/title&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [[1]]
+## &amp;lt;title&amp;gt;
+##     Social Media in Rural China on JSTOR
+## &amp;lt;/title&amp;gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>New Fatal Police Shooting Graphs - County Level</title>
       <link>/post/new-fatal-police-shooting-graphs-county-level/</link>
       <pubDate>Tue, 11 Jul 2017 00:00:00 +0000</pubDate>
@@ -2255,15 +2430,6 @@ ggrepel::geom_label_repel(data = dplyr::filter(df, 1e+05 * killRate &amp;gt; 10,
       <pubDate>Wed, 01 Jan 2014 00:00:00 +0000</pubDate>
       
       <guid>/publication/cpst_martin_reply/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Explaining Explanation: A Critical Review of John Levi Martin’s The Explanation of Social Action</title>
-      <link>/publication/cpst_martin_review/</link>
-      <pubDate>Tue, 01 Jan 2013 00:00:00 +0000</pubDate>
-      
-      <guid>/publication/cpst_martin_review/</guid>
       <description></description>
     </item>
     
