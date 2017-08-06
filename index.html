@@ -791,6 +791,54 @@
   
   
   <h3 class="article-title" itemprop="name">
+    <a href="/post/highchart-county-choropleth-map-of-county-poverty-2015/" itemprop="url">HighChart County Choropleth Map of County Poverty, 2015</a>
+  </h3>
+  
+
+<div class="article-metadata">
+
+  <span class="article-date">
+    <time datetime="2017-08-05 00:00:00 &#43;0000 UTC" itemprop="datePublished">
+      Sat, Aug 5, 2017
+    </time>
+  </span>
+
+  
+  
+  
+  
+
+  
+  
+  
+  
+
+  
+
+</div>
+
+  <div class="article-style" itemprop="articleBody">
+    
+    The following code downloads county-level poverty data in 2015 from the American Community Survey (ACS) via an API using the acs package. I then create an interactive Highchart map using the package highcharter.
+Download ACS Poverty data via an APIlibrary(tibble)library(dplyr)library(tidyr)library(fst)library(highcharter)library(&quot;viridisLite&quot;)library(acs)api.key.install(key = &quot;07e1aef2e1de18c0bd4ad888c8bd1295aa7400f9&quot;)all_counties = acs::geo.make(state = &quot;*&quot;, county = &quot;*&quot;)all_tracts = acs::geo.make(state = c(state.abb, &quot;DC&quot;), county = &quot;*&quot;, tract = &quot;*&quot;)pov_total_2015 = acs::acs.
+    
+  </div>
+  <p class="read-more">
+    <a href="/post/highchart-county-choropleth-map-of-county-poverty-2015/" class="btn btn-primary btn-outline">
+      CONTINUE READING
+    </a>
+  </p>
+</div>
+
+      
+        
+        
+
+
+<div class="article-list-item" itemscope itemprop="blogPost">
+  
+  
+  <h3 class="article-title" itemprop="name">
     <a href="/post/web-scraping-experiment/" itemprop="url">Web Scraping Experiment</a>
   </h3>
   
@@ -1049,74 +1097,6 @@ The authors make some good points that I mostly agree with, but I cannot make se
   </div>
   <p class="read-more">
     <a href="/post/a-question-about-a-new-article-on-police-shootings/" class="btn btn-primary btn-outline">
-      CONTINUE READING
-    </a>
-  </p>
-</div>
-
-      
-        
-        
-
-
-<div class="article-list-item" itemscope itemprop="blogPost">
-  
-  
-  <h3 class="article-title" itemprop="name">
-    <a href="/post/police-shooting-heat-maps-county-level/" itemprop="url">Police Shooting Heat Maps (County-Level)</a>
-  </h3>
-  
-
-<div class="article-metadata">
-
-  <span class="article-date">
-    <time datetime="2017-05-12 00:00:00 &#43;0000 UTC" itemprop="datePublished">
-      Fri, May 12, 2017
-    </time>
-  </span>
-
-  
-  
-  
-  
-
-  
-  
-  
-  <span class="article-tags">
-    <i class="fa fa-tags"></i>
-    
-    <a href="/tags/police-shooting">police shooting</a
-    >, 
-    
-    <a href="/tags/police-involved-fatalities">Police-involved fatalities</a
-    >, 
-    
-    <a href="/tags/police-use-of-force">Police use of force</a
-    >, 
-    
-    <a href="/tags/officer-involved-shootings">Officer-involved shootings</a
-    >
-    
-  </span>
-  
-  
-
-  
-
-</div>
-
-  <div class="article-style" itemprop="articleBody">
-    
-    Below are some new county-level heat maps of police shooting data, compiled from the Lott &amp; Moody (2016) data for years 2013-2015, and the Washington Post for 2016. Below the graphs, the R code is provided.
-Figure 1. Frequency of Civilians Killed by Police per County
-Figure 2. Civilians Killed by Police per 100,000 Residents
-Figure 3. Killed by Police Rates for Larger Counties
-R Code1. Load the Data.
-    
-  </div>
-  <p class="read-more">
-    <a href="/post/police-shooting-heat-maps-county-level/" class="btn btn-primary btn-outline">
       CONTINUE READING
     </a>
   </p>

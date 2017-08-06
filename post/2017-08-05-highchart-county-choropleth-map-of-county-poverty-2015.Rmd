@@ -1,0 +1,84 @@
+---
+title: HighChart County Choropleth Map of County Poverty, 2015
+author: John Hamilton Bradford
+date: '2017-08-05'
+slug: highchart-county-choropleth-map-of-county-poverty-2015
+categories: []
+tags: []
+---
+
+The following code downloads county-level poverty data in 2015 from the American Community Survey (ACS) via an API using the `acs` package.  I then create an interactive Highchart map using the package `highcharter`.
+
+###Download ACS Poverty data via an API
+```{r, tidy=TRUE, message=FALSE}
+
+library(tibble)
+library(dplyr)
+library(tidyr)
+library(fst)
+library(highcharter)
+library("viridisLite")
+library(acs)
+
+api.key.install(key="07e1aef2e1de18c0bd4ad888c8bd1295aa7400f9")
+all_counties = acs::geo.make(state="*", county="*")
+all_tracts = acs::geo.make(state=c(state.abb, "DC"), county="*", tract="*")
+
+
+pov_total_2015 = acs::acs.fetch(endyear=2015, span=5, geography=all_counties,
+                                table.number = "B17001", case.sensitive=F,
+                                dataset="acs",
+                                key = "07e1aef2e1de18c0bd4ad888c8bd1295aa7400f9")
+
+df = tibble::as_tibble(pov_total_2015@estimate) %>% 
+  dplyr::bind_cols(fips = paste0(as.character(pov_total_2015@geography$state), 
+                                 as.character(pov_total_2015@geography$county))) %>% 
+  dplyr::mutate(Poverty = 100*B17001_002/B17001_001) %>% 
+  dplyr::select(fips, Poverty)
+
+
+```
+
+
+###Creating a HighChart Map
+```{r, tidy=TRUE, message=FALSE}
+pov <- df$Poverty
+minVal=min(pov, na.rm=T)
+maxVal=max(pov, na.rm=T)
+val95 = quantile(pov, .95, na.rm=T)
+val05 = quantile(pov, .05, na.rm=T)
+valBins = 5
+value_binned = round(maxVal/(valBins+1))
+
+dclass <- data_frame(from = seq(minVal, maxVal-value_binned, by = value_binned),
+                     to = seq(from[2], maxVal, by = value_binned),
+                     color = substring(viridis(length(from), option = "C"), 0, 7))
+dclass <- list_parse(dclass)
+
+
+hc <- hcmap("https://code.highcharts.com/mapdata/countries/us/us-all-all.js", 
+      data = df, value = "Poverty",
+      joinBy = c("fips", "fips"), 
+      name = "Poverty",
+      dataLabels = list(enabled = FALSE, format = '{point.name}'),
+      borderColor = "#FAFAFA", 
+      borderWidth = 0.1,
+      tooltip = list(headerFormat = "Poverty-",
+                     valueDecimals = 2, 
+                     valueSuffix = "%")) %>% 
+  hc_title(text = "Percentage Living Below Poverty Level in 2015 (ACS)") %>% 
+  hc_subtitle(text = "johnbradford.github.io") %>% 
+  hc_mapNavigation(enabled = TRUE) %>% 
+  hc_colorAxis(dataClasses = dclass) 
+```
+
+
+Once the chart is created, it has to be saved using the `htmlwidgets` package.  I saved it to a folder on my github page using the following code, and then use an iframe html tag to display it.  
+
+```{r, eval=FALSE, tidy=TRUE}
+library(htmlwidgets)
+htmlwidgets::saveWidget(hc, file="us_poverty_map.html")
+```
+
+
+<iframe seamless src="/files/html_widgets/us_poverty_map.html" width="100%" height="700"></iframe>

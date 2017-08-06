@@ -164,6 +164,52 @@
   
   <div>
     
+    <h2><a href="/post/highchart-county-choropleth-map-of-county-poverty-2015/">HighChart County Choropleth Map of County Poverty, 2015</a></h2>
+    
+
+<div class="article-metadata">
+
+  <span class="article-date">
+    <time datetime="2017-08-05 00:00:00 &#43;0000 UTC" itemprop="datePublished">
+      Sat, Aug 5, 2017
+    </time>
+  </span>
+
+  
+  
+  
+  
+
+  
+  
+  
+  
+
+  
+
+</div>
+
+    <div class="article-style"><p>
+      
+      The following code downloads county-level poverty data in 2015 from the American Community Survey (ACS) via an API using the acs package. I then create an interactive Highchart map using the package highcharter.
+Download ACS Poverty data via an API
+library(tibble)
+library(dplyr)
+library(tidyr)
+library(fst)
+library(highcharter)
+library(&quot;viridisLite&quot;)
+library(acs)
+api.key.install(key = &quot;07e1aef2e1de18c0bd4ad888c8bd1295aa7400f9&quot;)
+all_counties = acs::geo.make(state = &quot;<em>&quot;, county = &quot;</em>&quot;)
+all_tracts = acs::geo.make(state = c(state.abb, &quot;DC&quot;), county = &quot;<em>&quot;, tract = &quot;</em>&quot;)
+pov_total_2015 = acs::acs.
+      
+    </p></div>
+  </div>
+  
+  <div>
+    
     <h2><a href="/post/web-scraping-experiment/">Web Scraping Experiment</a></h2>
     
 
@@ -483,6 +529,34 @@ Figure 1. Frequency of Civilians Killed by Police per County</p>
 <a class="muut" href="https://muut.com/i/jhbradford/comments" type="dynamic">jhbradford</a>
 <script src="//cdn.muut.com/1/moot.min.js"></script>
 
+      
+    </p></div>
+  </div>
+  
+  <div>
+    
+    <h2><a href="/post/us_poverty_map/"></a></h2>
+    
+
+<div class="article-metadata">
+
+  <span class="article-date">
+    <time datetime="0001-01-01 00:00:00 &#43;0000 UTC" itemprop="datePublished">
+      Mon, Jan 1, 0001
+    </time>
+  </span>
+
+  
+
+  
+
+  
+
+</div>
+
+    <div class="article-style"><p>
+      
+      {&ldquo;x&rdquo;:{&ldquo;hc_opts&rdquo;:{&ldquo;title&rdquo;:{&ldquo;text&rdquo;:&ldquo;Percentage Living Below Poverty Level in 2015 (ACS)&rdquo;},&ldquo;yAxis&rdquo;:{&ldquo;title&rdquo;:{&ldquo;text&rdquo;:null}},&ldquo;credits&rdquo;:{&ldquo;enabled&rdquo;:true},&ldquo;exporting&rdquo;:{&ldquo;enabled&rdquo;:false},&ldquo;plotOptions&rdquo;:{&ldquo;series&rdquo;:{&ldquo;turboThreshold&rdquo;:0},&ldquo;treemap&rdquo;:{&ldquo;layoutAlgorithm&rdquo;:&ldquo;squarified&rdquo;},&ldquo;bubble&rdquo;:{&ldquo;minSize&rdquo;:5,&ldquo;maxSize&rdquo;:25}},&ldquo;annotationsOptions&rdquo;:{&ldquo;enabledButtons&rdquo;:false},&ldquo;tooltip&rdquo;:{&ldquo;delayForDisplay&rdquo;:10},&ldquo;series&rdquo;:[{&ldquo;mapData&rdquo;:{&ldquo;title&rdquo;:&ldquo;United States of America, admin2&rdquo;,&ldquo;version&rdquo;:&ldquo;1.1.2&rdquo;,&ldquo;type&rdquo;:&ldquo;FeatureCollection&rdquo;,&ldquo;copyright&rdquo;:&ldquo;Copyright &copy; 2015 Highsoft AS, Based on data from The United States Census Bureau&rdquo;,&ldquo;copyrightShort&rdquo;:&ldquo;USA Census Bureau&rdquo;,&ldquo;copyrightUrl&rdquo;:&ldquo;<a href="http://www.census.gov&quot;,&quot;crs&quot;:{&quot;type&quot;:&quot;name&quot;,&quot;properties&quot;:{&quot;name&quot;:&quot;urn:ogc:def:crs:EPSG:102004&quot;}},&quot;hc-transform&quot;:{&quot;default&quot;:{&quot;crs&quot;:&quot;+proj=lcc" target="_blank">http://www.census.gov&quot;,&quot;crs&quot;:{&quot;type&quot;:&quot;name&quot;,&quot;properties&quot;:{&quot;name&quot;:&quot;urn:ogc:def:crs:EPSG:102004&quot;}},&quot;hc-transform&quot;:{&quot;default&quot;:{&quot;crs&quot;:&quot;+proj=lcc</a> +lat_1=33 +lat_2=45 +lat_0=39 +lon_0=-96 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs&rdquo;
       
     </p></div>
   </div>

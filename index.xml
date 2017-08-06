@@ -11,6 +11,67 @@
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>HighChart County Choropleth Map of County Poverty, 2015</title>
+      <link>/post/highchart-county-choropleth-map-of-county-poverty-2015/</link>
+      <pubDate>Sat, 05 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/post/highchart-county-choropleth-map-of-county-poverty-2015/</guid>
+      <description>&lt;p&gt;The following code downloads county-level poverty data in 2015 from the American Community Survey (ACS) via an API using the &lt;code&gt;acs&lt;/code&gt; package. I then create an interactive Highchart map using the package &lt;code&gt;highcharter&lt;/code&gt;.&lt;/p&gt;
+&lt;div id=&#34;download-acs-poverty-data-via-an-api&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Download ACS Poverty data via an API&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tibble)
+library(dplyr)
+library(tidyr)
+library(fst)
+library(highcharter)
+library(&amp;quot;viridisLite&amp;quot;)
+library(acs)
+
+api.key.install(key = &amp;quot;07e1aef2e1de18c0bd4ad888c8bd1295aa7400f9&amp;quot;)
+all_counties = acs::geo.make(state = &amp;quot;*&amp;quot;, county = &amp;quot;*&amp;quot;)
+all_tracts = acs::geo.make(state = c(state.abb, &amp;quot;DC&amp;quot;), county = &amp;quot;*&amp;quot;, tract = &amp;quot;*&amp;quot;)
+
+
+pov_total_2015 = acs::acs.fetch(endyear = 2015, span = 5, geography = all_counties, 
+    table.number = &amp;quot;B17001&amp;quot;, case.sensitive = F, dataset = &amp;quot;acs&amp;quot;, key = &amp;quot;07e1aef2e1de18c0bd4ad888c8bd1295aa7400f9&amp;quot;)
+
+df = tibble::as_tibble(pov_total_2015@estimate) %&amp;gt;% dplyr::bind_cols(fips = paste0(as.character(pov_total_2015@geography$state), 
+    as.character(pov_total_2015@geography$county))) %&amp;gt;% dplyr::mutate(Poverty = 100 * 
+    B17001_002/B17001_001) %&amp;gt;% dplyr::select(fips, Poverty)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;creating-a-highchart-map&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Creating a HighChart Map&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;pov &amp;lt;- df$Poverty
+minVal = min(pov, na.rm = T)
+maxVal = max(pov, na.rm = T)
+val95 = quantile(pov, 0.95, na.rm = T)
+val05 = quantile(pov, 0.05, na.rm = T)
+valBins = 5
+value_binned = round(maxVal/(valBins + 1))
+
+dclass &amp;lt;- data_frame(from = seq(minVal, maxVal - value_binned, by = value_binned), 
+    to = seq(from[2], maxVal, by = value_binned), color = substring(viridis(length(from), 
+        option = &amp;quot;C&amp;quot;), 0, 7))
+dclass &amp;lt;- list_parse(dclass)
+
+
+hc &amp;lt;- hcmap(&amp;quot;https://code.highcharts.com/mapdata/countries/us/us-all-all.js&amp;quot;, 
+    data = df, value = &amp;quot;Poverty&amp;quot;, joinBy = c(&amp;quot;fips&amp;quot;, &amp;quot;fips&amp;quot;), name = &amp;quot;Poverty&amp;quot;, 
+    dataLabels = list(enabled = FALSE, format = &amp;quot;{point.name}&amp;quot;), borderColor = &amp;quot;#FAFAFA&amp;quot;, 
+    borderWidth = 0.1, tooltip = list(headerFormat = &amp;quot;Poverty-&amp;quot;, valueDecimals = 2, 
+        valueSuffix = &amp;quot;%&amp;quot;)) %&amp;gt;% hc_title(text = &amp;quot;Percentage Living Below Poverty Level in 2015 (ACS)&amp;quot;) %&amp;gt;% 
+    hc_subtitle(text = &amp;quot;johnbradford.github.io&amp;quot;) %&amp;gt;% hc_mapNavigation(enabled = TRUE) %&amp;gt;% 
+    hc_colorAxis(dataClasses = dclass)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Once the chart is created, it has to be saved using the &lt;code&gt;htmlwidgets&lt;/code&gt; package. I saved it to a folder on my github page using the following code, and then use an iframe html tag to display it.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(htmlwidgets)
+htmlwidgets::saveWidget(hc, file = &amp;quot;us_poverty_map.html&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;iframe seamless src=&#34;/files/html_widgets/us_poverty_map.html&#34; width=&#34;100%&#34; height=&#34;700&#34;&gt;
+&lt;/iframe&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Web Scraping Experiment</title>
       <link>/post/web-scraping-experiment/</link>
       <pubDate>Sat, 05 Aug 2017 00:00:00 +0000</pubDate>
@@ -2421,15 +2482,6 @@ ggrepel::geom_label_repel(data = dplyr::filter(df, 1e+05 * killRate &amp;gt; 10,
       <pubDate>Thu, 01 May 2014 00:00:00 +0000</pubDate>
       
       <guid>/publication/cjas_footprint_2014/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Explaining Social Action Revisited: A Reply to John Levi Martin</title>
-      <link>/publication/cpst_martin_reply/</link>
-      <pubDate>Wed, 01 Jan 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/publication/cpst_martin_reply/</guid>
       <description></description>
     </item>
     
