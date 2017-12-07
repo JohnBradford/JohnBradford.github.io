@@ -11,9 +11,12 @@ tags:
   - Officer-involved shootings
 ---
 
+ 
+![Figure 1. SVG](https://cdn.rawgit.com/JohnBradford/JohnBradford.github.io/1a51bc00/img/policeShoot/SVG_map_counts_c_10x6.svg)
 
+![Figure 2. SVG](https://cdn.rawgit.com/JohnBradford/JohnBradford.github.io/1a51bc00/img/policeShoot/SVG_map_rates_c_10x6.svg)
 
- Above are some new county-level heat maps of police shooting data, compiled from the Lott & Moody (2016) data for years 2013-2015, and the Washington Post for 2016.  Below the graphs, the R code is provided.
+Above are some new county-level heat maps of police shooting data, compiled from the Lott & Moody (2016) data for years 2013-2015, and the Washington Post for 2016.  Below the graphs, the R code is provided.
 
 
 ## R Code
@@ -59,7 +62,8 @@ sesVars <- c( "medianIncome", "bw_income_gap", "gini",
 popVars <- c("FIPS", "pop", "pop.c.total_5yr", "pop.blackPrcnt_log",
              "pop.c.black_5yr", "black_sq", 
              "pop.c.black_change","pop.c.hispanic_5yr",
-             "pop.male.15_29_5yr","policePrcntBlack" ,"policeRatio", "policeFullTime_log", "policeFullTime",
+             "pop.male.15_29_5yr","policePrcntBlack" ,"policeRatio", "policeFullTime_log", 
+             "policeFullTime",
              "crowding_prcnt")
 
 depVars <- c("killRate", "killed", "killDummy")
@@ -325,7 +329,7 @@ ggtitle(label="Killed by Police Rates (2013-2016) in Counties with at least 10,0
 ```
 
 ###4.   Convert to html widgets
-```{r, tidy=TRUE, eval=FALSE}
+```{r,  eval=FALSE}
 F1_svg <- svgPanZoom(svg="JohnBradford.github.io/img/policeShoot/SVG_map_counts_c_10x6.svg")
 htmlwidgets::saveWidget(
   F1_svg, 
@@ -340,3 +344,8 @@ htmlwidgets::saveWidget(
 
 ```
 
+Figure 1.
+<iframe seamless src="https://cdn.rawgit.com/JohnBradford/JohnBradford.github.io/1a51bc00/files/html_widgets/SVG_map_counts_c_10x6.html" width="100%" height="600"></iframe>
+
+Figure 2. 
+<iframe seamless src="https://cdn.rawgit.com/JohnBradford/JohnBradford.github.io/1a51bc00/files/html_widgets/SVG_map_rates_c_10x6.html" width="100%" height="600"></iframe>

@@ -247,7 +247,15 @@
 </div>
 
     <div class="article-style" itemprop="articleBody">
-      <p>Above are some new county-level heat maps of police shooting data, compiled from the Lott &amp; Moody (2016) data for years 2013-2015, and the Washington Post for 2016. Below the graphs, the R code is provided.</p>
+      <div class="figure">
+<img src="https://cdn.rawgit.com/JohnBradford/JohnBradford.github.io/1a51bc00/img/policeShoot/SVG_map_counts_c_10x6.svg" alt="Figure 1. SVG" />
+<p class="caption">Figure 1. SVG</p>
+</div>
+<div class="figure">
+<img src="https://cdn.rawgit.com/JohnBradford/JohnBradford.github.io/1a51bc00/img/policeShoot/SVG_map_rates_c_10x6.svg" alt="Figure 2. SVG" />
+<p class="caption">Figure 2. SVG</p>
+</div>
+<p>Above are some new county-level heat maps of police shooting data, compiled from the Lott &amp; Moody (2016) data for years 2013-2015, and the Washington Post for 2016. Below the graphs, the R code is provided.</p>
 <div id="r-code" class="section level2">
 <h2>R Code</h2>
 <div id="load-the-data." class="section level3">
@@ -503,11 +511,17 @@ ggrepel::geom_label_repel(data = dplyr::filter(df, 1e+05 * killRate &gt; 10, pop
 </div>
 <div id="convert-to-html-widgets" class="section level3">
 <h3>4. Convert to html widgets</h3>
-<pre class="r"><code>F1_svg &lt;- svgPanZoom(svg = &quot;JohnBradford.github.io/img/policeShoot/SVG_map_counts_c_10x6.svg&quot;)
-htmlwidgets::saveWidget(F1_svg, file = &quot;SVG_map_counts_c_10x6.html&quot;)
+<pre class="r"><code>F1_svg &lt;- svgPanZoom(svg=&quot;JohnBradford.github.io/img/policeShoot/SVG_map_counts_c_10x6.svg&quot;)
+htmlwidgets::saveWidget(
+  F1_svg, 
+  file = &quot;SVG_map_counts_c_10x6.html&quot;)
 
-F2_svg &lt;- svgPanZoom(svg = &quot;JohnBradford.github.io/img/policeShoot/SVG_map_rates_c_10x6.svg&quot;)
-htmlwidgets::saveWidget(F2_svg, file = &quot;SVG_map_rates_c_10x6.html&quot;)</code></pre>
+F2_svg &lt;- svgPanZoom(svg=&quot;JohnBradford.github.io/img/policeShoot/SVG_map_rates_c_10x6.svg&quot;)
+htmlwidgets::saveWidget(
+  F2_svg, 
+  file = &quot;SVG_map_rates_c_10x6.html&quot;)</code></pre>
+<p>Figure 1. <iframe seamless src="https://cdn.rawgit.com/JohnBradford/JohnBradford.github.io/1a51bc00/files/html_widgets/SVG_map_counts_c_10x6.html" width="100%" height="600"></iframe></p>
+<p>Figure 2. <iframe seamless src="https://cdn.rawgit.com/JohnBradford/JohnBradford.github.io/1a51bc00/files/html_widgets/SVG_map_rates_c_10x6.html" width="100%" height="600"></iframe></p>
 </div>
 </div>
 

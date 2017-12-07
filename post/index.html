@@ -524,7 +524,11 @@ The authors make some good points that I mostly agree with, but I cannot make se
 
     <div class="article-style"><p>
       
-      Above are some new county-level heat maps of police shooting data, compiled from the Lott &amp; Moody (2016) data for years 2013-2015, and the Washington Post for 2016. Below the graphs, the R code is provided.
+      <p>Figure 1. SVG</p>
+
+<p>Figure 2. SVG</p>
+
+<p>Above are some new county-level heat maps of police shooting data, compiled from the Lott &amp; Moody (2016) data for years 2013-2015, and the Washington Post for 2016. Below the graphs, the R code is provided.
 R Code
 1. Load the Data.
 (I plan to upload these data sets to figshare shortly.)
@@ -532,7 +536,8 @@ library(readr)
 library(tidyr)
 library(dplyr)
 vars &lt;- fst::read.fst(path = &quot;countyVars.csv&quot;)
-df_wapoLott &lt;- dplyr::left_join(vars, readr::read_csv(&quot;killed_lott_wapo.csv&quot;)) %&gt;% dplyr::mutate_at(vars(contains(&quot;killed&quot;)), funs(replace(., is.na(.), 0))) %&gt;% dplyr::mutate(killDummy = ifelse(killed == 0, &quot;NO&quot;, &quot;YES&quot;), killDummy = factor(killDummy), killRate = killed/pop.
+df_wapoLott &lt;- dplyr::left_join(vars, readr::read_csv(&quot;killed_lott_wapo.</p>
+
       
     </p></div>
   </div>
