@@ -220,16 +220,15 @@ The authors make some good points that I mostly agree with, but I cannot make se
     <h2><a href="/post/police-shooting-heat-maps-county-level/">Police Shooting Heat Maps (County-Level)</a></h2>
     <div class="article-style">
       
-      <p>Below are some new county-level heat maps of police shooting data, compiled from the Lott &amp; Moody (2016) data for years 2013-2015, and the Washington Post for 2016. Below the graphs, the R code is provided.
-Figure 1. Frequency of Civilians Killed by Police per County</p>
-
-<p>Figure 2. Civilians Killed by Police per 100,000 Residents</p>
-
-<p>Figure 3. Killed by Police Rates for Larger Counties</p>
-
-<p>R Code
-1. Load the Data.</p>
-
+      Above are some new county-level heat maps of police shooting data, compiled from the Lott &amp; Moody (2016) data for years 2013-2015, and the Washington Post for 2016. Below the graphs, the R code is provided.
+R Code
+1. Load the Data.
+(I plan to upload these data sets to figshare shortly.)
+library(readr)
+library(tidyr)
+library(dplyr)
+vars &lt;- fst::read.fst(path = &quot;countyVars.csv&quot;)
+df_wapoLott &lt;- dplyr::left_join(vars, readr::read_csv(&quot;killed_lott_wapo.csv&quot;)) %&gt;% dplyr::mutate_at(vars(contains(&quot;killed&quot;)), funs(replace(., is.na(.), 0))) %&gt;% dplyr::mutate(killDummy = ifelse(killed == 0, &quot;NO&quot;, &quot;YES&quot;), killDummy = factor(killDummy), killRate = killed/pop.
       
     </div>
   </div>

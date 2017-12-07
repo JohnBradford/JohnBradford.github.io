@@ -1902,19 +1902,7 @@ geom_boxplot(alpha = 0.5, position = &amp;quot;dodge&amp;quot;, color = &amp;quo
       <pubDate>Fri, 12 May 2017 00:00:00 +0000</pubDate>
       
       <guid>/post/police-shooting-heat-maps-county-level/</guid>
-      <description>&lt;p&gt;Below are some new county-level heat maps of police shooting data, compiled from the Lott &amp;amp; Moody (2016) data for years 2013-2015, and the Washington Post for 2016. Below the graphs, the R code is provided.&lt;/p&gt;
-&lt;div class=&#34;figure&#34;&gt;
-&lt;img src=&#34;/img/policeShoot/SVG_map_counts_c_10x6.svg&#34; alt=&#34;Figure 1. Frequency of Civilians Killed by Police per County&#34; /&gt;
-&lt;p class=&#34;caption&#34;&gt;Figure 1. Frequency of Civilians Killed by Police per County&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&#34;figure&#34;&gt;
-&lt;img src=&#34;/img/policeShoot/SVG_map_rates_c_10x6.svg&#34; alt=&#34;Figure 2. Civilians Killed by Police per 100,000 Residents&#34; /&gt;
-&lt;p class=&#34;caption&#34;&gt;Figure 2. Civilians Killed by Police per 100,000 Residents&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&#34;figure&#34;&gt;
-&lt;img src=&#34;/img/policeShoot/map_county_rate_1366_768.png&#34; alt=&#34;Figure 3. Killed by Police Rates for Larger Counties&#34; /&gt;
-&lt;p class=&#34;caption&#34;&gt;Figure 3. Killed by Police Rates for Larger Counties&lt;/p&gt;
-&lt;/div&gt;
+      <description>&lt;p&gt;Above are some new county-level heat maps of police shooting data, compiled from the Lott &amp;amp; Moody (2016) data for years 2013-2015, and the Washington Post for 2016. Below the graphs, the R code is provided.&lt;/p&gt;
 &lt;div id=&#34;r-code&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;R Code&lt;/h2&gt;
 &lt;div id=&#34;load-the-data.&#34; class=&#34;section level3&#34;&gt;
@@ -2167,6 +2155,14 @@ ggrepel::geom_label_repel(data = dplyr::filter(df, 1e+05 * killRate &amp;gt; 10,
         text = element_text(face = &amp;quot;bold&amp;quot;), axis.text.x = element_blank(), axis.text.y = element_blank()) + 
     xlab(&amp;quot;&amp;quot;) + ylab(&amp;quot;&amp;quot;) + ggtitle(label = &amp;quot;Killed by Police Rates (2013-2016) in Counties with at least 10,000 Residents&amp;quot;, 
     subtitle = &amp;quot;Data from Lott &amp;amp; Moody (2013-2015), Washington Post (2016), and US Census 5-year county population averages (2011-2015).\nSource: johnbradford.github.io&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;convert-to-html-widgets&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;4. Convert to html widgets&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;F1_svg &amp;lt;- svgPanZoom(svg = &amp;quot;JohnBradford.github.io/img/policeShoot/SVG_map_counts_c_10x6.svg&amp;quot;)
+htmlwidgets::saveWidget(F1_svg, file = &amp;quot;SVG_map_counts_c_10x6.html&amp;quot;)
+
+F2_svg &amp;lt;- svgPanZoom(svg = &amp;quot;JohnBradford.github.io/img/policeShoot/SVG_map_rates_c_10x6.svg&amp;quot;)
+htmlwidgets::saveWidget(F2_svg, file = &amp;quot;SVG_map_rates_c_10x6.html&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 </description>

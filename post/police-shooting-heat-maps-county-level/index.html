@@ -247,19 +247,7 @@
 </div>
 
     <div class="article-style" itemprop="articleBody">
-      <p>Below are some new county-level heat maps of police shooting data, compiled from the Lott &amp; Moody (2016) data for years 2013-2015, and the Washington Post for 2016. Below the graphs, the R code is provided.</p>
-<div class="figure">
-<img src="/img/policeShoot/SVG_map_counts_c_10x6.svg" alt="Figure 1. Frequency of Civilians Killed by Police per County" />
-<p class="caption">Figure 1. Frequency of Civilians Killed by Police per County</p>
-</div>
-<div class="figure">
-<img src="/img/policeShoot/SVG_map_rates_c_10x6.svg" alt="Figure 2. Civilians Killed by Police per 100,000 Residents" />
-<p class="caption">Figure 2. Civilians Killed by Police per 100,000 Residents</p>
-</div>
-<div class="figure">
-<img src="/img/policeShoot/map_county_rate_1366_768.png" alt="Figure 3. Killed by Police Rates for Larger Counties" />
-<p class="caption">Figure 3. Killed by Police Rates for Larger Counties</p>
-</div>
+      <p>Above are some new county-level heat maps of police shooting data, compiled from the Lott &amp; Moody (2016) data for years 2013-2015, and the Washington Post for 2016. Below the graphs, the R code is provided.</p>
 <div id="r-code" class="section level2">
 <h2>R Code</h2>
 <div id="load-the-data." class="section level3">
@@ -512,6 +500,14 @@ ggrepel::geom_label_repel(data = dplyr::filter(df, 1e+05 * killRate &gt; 10, pop
         text = element_text(face = &quot;bold&quot;), axis.text.x = element_blank(), axis.text.y = element_blank()) + 
     xlab(&quot;&quot;) + ylab(&quot;&quot;) + ggtitle(label = &quot;Killed by Police Rates (2013-2016) in Counties with at least 10,000 Residents&quot;, 
     subtitle = &quot;Data from Lott &amp; Moody (2013-2015), Washington Post (2016), and US Census 5-year county population averages (2011-2015).\nSource: johnbradford.github.io&quot;)</code></pre>
+</div>
+<div id="convert-to-html-widgets" class="section level3">
+<h3>4. Convert to html widgets</h3>
+<pre class="r"><code>F1_svg &lt;- svgPanZoom(svg = &quot;JohnBradford.github.io/img/policeShoot/SVG_map_counts_c_10x6.svg&quot;)
+htmlwidgets::saveWidget(F1_svg, file = &quot;SVG_map_counts_c_10x6.html&quot;)
+
+F2_svg &lt;- svgPanZoom(svg = &quot;JohnBradford.github.io/img/policeShoot/SVG_map_rates_c_10x6.svg&quot;)
+htmlwidgets::saveWidget(F2_svg, file = &quot;SVG_map_rates_c_10x6.html&quot;)</code></pre>
 </div>
 </div>
 

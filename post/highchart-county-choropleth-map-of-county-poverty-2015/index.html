@@ -230,7 +230,9 @@
 </div>
 
     <div class="article-style" itemprop="articleBody">
-      <p>The following code downloads county-level poverty data in 2015 from the American Community Survey (ACS) via an API using the <code>acs</code> package. I then create an interactive Highchart map using the package <code>highcharter</code>.</p>
+      <iframe seamless src="https://cdn.rawgit.com/JohnBradford/JohnBradford.github.io/6510c1f5/files/html_widgets/us_poverty_map.html" width="100%" height="700">
+</iframe>
+<p>The following code downloads county-level poverty data in 2015 from the American Community Survey (ACS) via an API using the <code>acs</code> package. I then create an interactive Highchart map using the package <code>highcharter</code>.</p>
 <div id="download-acs-poverty-data-via-an-api" class="section level3">
 <h3>Download ACS Poverty data via an API</h3>
 <pre class="r"><code>library(tibble)
@@ -279,8 +281,6 @@ hc &lt;- hcmap(&quot;https://code.highcharts.com/mapdata/countries/us/us-all-all
 <p>Once the chart is created, it has to be saved using the <code>htmlwidgets</code> package. I saved it to a folder on my github page using the following code, and then use an iframe html tag to display it.</p>
 <pre class="r"><code>library(htmlwidgets)
 htmlwidgets::saveWidget(hc, file = &quot;us_poverty_map.html&quot;)</code></pre>
-<iframe seamless src="/files/html_widgets/us_poverty_map.html" width="100%" height="700">
-</iframe>
 </div>
 
     </div>
@@ -296,6 +296,9 @@ htmlwidgets::saveWidget(hc, file = &quot;us_poverty_map.html&quot;)</code></pre>
       aria-hidden="true">&larr;</span> Web Scraping Experiment</a></li>
     
 
+    
+    <li class="next"><a href="/post/networkd3-example/">NetworkD3 Example <span
+      aria-hidden="true">&rarr;</span></a></li>
     
   </ul>
 </nav>

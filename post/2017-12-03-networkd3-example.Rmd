@@ -1,0 +1,21 @@
+---
+title: NetworkD3 Example
+author: John Hamilton Bradford
+date: '2017-12-03'
+slug: networkd3-example
+categories: []
+tags: []
+---
+
+```{r, warning=FALSE, echo=FALSE}
+library(networkD3)
+data(MisLinks)
+data(MisNodes)
+
+# Plot
+forceNetwork(Links = MisLinks, Nodes = MisNodes,
+            Source = "source", Target = "target",
+            Value = "value", NodeID = "name",
+            Group = "group", opacity = 0.8)
+```
+

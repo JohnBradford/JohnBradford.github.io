@@ -11,12 +11,30 @@
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>NetworkD3 Example</title>
+      <link>/post/networkd3-example/</link>
+      <pubDate>Sun, 03 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/post/networkd3-example/</guid>
+      <description>&lt;script src=&#34;/rmarkdown-libs/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/d3/d3.min.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/forceNetwork-binding/forceNetwork.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;div id=&#34;htmlwidget-1&#34; style=&#34;width:672px;height:480px;&#34; class=&#34;forceNetwork html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;links&#34;:{&#34;source&#34;:[1,2,3,3,4,5,6,7,8,9,11,11,11,11,12,13,14,15,17,18,18,19,19,19,20,20,20,20,21,21,21,21,21,22,22,22,22,22,22,23,23,23,23,23,23,23,23,23,24,24,25,25,25,26,26,26,26,27,27,27,27,27,28,28,29,29,29,30,31,31,31,31,32,33,33,34,34,35,35,35,36,36,36,36,37,37,37,37,37,38,38,38,38,38,38,39,40,41,41,42,42,42,43,43,43,44,44,45,47,48,48,48,48,49,49,50,50,51,51,51,52,52,53,54,54,54,55,55,55,55,55,55,55,55,55,55,56,56,57,57,57,58,58,58,58,58,59,59,59,59,60,60,60,61,61,61,61,61,61,62,62,62,62,62,62,62,62,63,63,63,63,63,63,63,63,64,64,64,64,64,64,64,64,64,64,65,65,65,65,65,65,65,65,65,65,66,66,66,66,66,66,66,66,66,67,68,68,68,68,68,68,69,69,69,69,69,69,69,70,70,70,70,70,70,70,70,71,71,71,71,71,71,71,71,72,72,72,73,74,74,75,75,75,75,75,75,75,76,76,76,76,76,76,76],&#34;target&#34;:[0,0,0,2,0,0,0,0,0,0,10,3,2,0,11,11,11,11,16,16,17,16,17,18,16,17,18,19,16,17,18,19,20,16,17,18,19,20,21,16,17,18,19,20,21,22,12,11,23,11,24,23,11,24,11,16,25,11,23,25,24,26,11,27,23,27,11,23,30,11,23,27,11,11,27,11,29,11,34,29,34,35,11,29,34,35,36,11,29,34,35,36,37,11,29,25,25,24,25,41,25,24,11,26,27,28,11,28,46,47,25,27,11,26,11,49,24,49,26,11,51,39,51,51,49,26,51,49,39,54,26,11,16,25,41,48,49,55,55,41,48,55,48,27,57,11,58,55,48,57,48,58,59,48,58,60,59,57,55,55,58,59,48,57,41,61,60,59,48,62,57,58,61,60,55,55,62,48,63,58,61,60,59,57,11,63,64,48,62,58,61,60,59,57,55,64,58,59,62,65,48,63,61,60,57,25,11,24,27,48,41,25,68,11,24,27,48,41,25,69,68,11,24,27,41,58,27,69,68,70,11,48,41,25,26,27,11,48,48,73,69,68,25,48,41,70,71,64,65,66,63,62,48,58],&#34;value&#34;:[1,8,10,6,1,1,1,1,2,1,1,3,3,5,1,1,1,1,4,4,4,4,4,4,3,3,3,4,3,3,3,3,5,3,3,3,3,4,4,3,3,3,3,4,4,4,2,9,2,7,13,1,12,4,31,1,1,17,5,5,1,1,8,1,1,1,2,1,2,3,2,1,1,2,1,3,2,3,3,2,2,2,2,1,2,2,2,2,1,2,2,2,2,2,1,1,1,2,3,2,2,1,3,1,1,3,1,2,1,2,1,1,1,3,2,1,1,9,2,2,1,1,1,2,1,1,6,12,1,1,21,19,1,2,5,4,1,1,1,1,1,7,7,6,1,4,15,5,6,2,1,4,2,2,6,2,5,1,1,9,17,13,7,2,1,6,3,5,5,6,2,4,3,2,1,5,12,5,4,10,6,2,9,1,1,5,7,3,5,5,5,2,5,1,2,3,3,1,2,2,1,1,1,1,3,5,1,1,1,1,1,6,6,1,1,2,1,1,4,4,4,1,1,1,1,1,1,2,2,2,1,1,1,1,2,1,1,2,2,3,3,3,3,1,1,1,1,1,1,1,1,1,1,1],&#34;colour&#34;:[&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;,&#34;#666&#34;]},&#34;nodes&#34;:{&#34;name&#34;:[&#34;Myriel&#34;,&#34;Napoleon&#34;,&#34;Mlle.Baptistine&#34;,&#34;Mme.Magloire&#34;,&#34;CountessdeLo&#34;,&#34;Geborand&#34;,&#34;Champtercier&#34;,&#34;Cravatte&#34;,&#34;Count&#34;,&#34;OldMan&#34;,&#34;Labarre&#34;,&#34;Valjean&#34;,&#34;Marguerite&#34;,&#34;Mme.deR&#34;,&#34;Isabeau&#34;,&#34;Gervais&#34;,&#34;Tholomyes&#34;,&#34;Listolier&#34;,&#34;Fameuil&#34;,&#34;Blacheville&#34;,&#34;Favourite&#34;,&#34;Dahlia&#34;,&#34;Zephine&#34;,&#34;Fantine&#34;,&#34;Mme.Thenardier&#34;,&#34;Thenardier&#34;,&#34;Cosette&#34;,&#34;Javert&#34;,&#34;Fauchelevent&#34;,&#34;Bamatabois&#34;,&#34;Perpetue&#34;,&#34;Simplice&#34;,&#34;Scaufflaire&#34;,&#34;Woman1&#34;,&#34;Judge&#34;,&#34;Champmathieu&#34;,&#34;Brevet&#34;,&#34;Chenildieu&#34;,&#34;Cochepaille&#34;,&#34;Pontmercy&#34;,&#34;Boulatruelle&#34;,&#34;Eponine&#34;,&#34;Anzelma&#34;,&#34;Woman2&#34;,&#34;MotherInnocent&#34;,&#34;Gribier&#34;,&#34;Jondrette&#34;,&#34;Mme.Burgon&#34;,&#34;Gavroche&#34;,&#34;Gillenormand&#34;,&#34;Magnon&#34;,&#34;Mlle.Gillenormand&#34;,&#34;Mme.Pontmercy&#34;,&#34;Mlle.Vaubois&#34;,&#34;Lt.Gillenormand&#34;,&#34;Marius&#34;,&#34;BaronessT&#34;,&#34;Mabeuf&#34;,&#34;Enjolras&#34;,&#34;Combeferre&#34;,&#34;Prouvaire&#34;,&#34;Feuilly&#34;,&#34;Courfeyrac&#34;,&#34;Bahorel&#34;,&#34;Bossuet&#34;,&#34;Joly&#34;,&#34;Grantaire&#34;,&#34;MotherPlutarch&#34;,&#34;Gueulemer&#34;,&#34;Babet&#34;,&#34;Claquesous&#34;,&#34;Montparnasse&#34;,&#34;Toussaint&#34;,&#34;Child1&#34;,&#34;Child2&#34;,&#34;Brujon&#34;,&#34;Mme.Hucheloup&#34;],&#34;group&#34;:[1,1,1,1,1,1,1,1,1,1,2,2,3,2,2,2,3,3,3,3,3,3,3,3,4,4,5,4,0,2,3,2,2,2,2,2,2,2,2,4,6,4,4,5,0,0,7,7,8,5,5,5,5,5,5,8,5,8,8,8,8,8,8,8,8,8,8,9,4,4,4,4,5,10,10,4,8]},&#34;options&#34;:{&#34;NodeID&#34;:&#34;name&#34;,&#34;Group&#34;:&#34;group&#34;,&#34;colourScale&#34;:&#34;d3.scaleOrdinal(d3.schemeCategory20);&#34;,&#34;fontSize&#34;:7,&#34;fontFamily&#34;:&#34;serif&#34;,&#34;clickTextSize&#34;:17.5,&#34;linkDistance&#34;:50,&#34;linkWidth&#34;:&#34;function(d) { return Math.sqrt(d.value); }&#34;,&#34;charge&#34;:-30,&#34;opacity&#34;:0.8,&#34;zoom&#34;:false,&#34;legend&#34;:false,&#34;arrows&#34;:false,&#34;nodesize&#34;:false,&#34;radiusCalculation&#34;:&#34; Math.sqrt(d.nodesize)+6&#34;,&#34;bounded&#34;:false,&#34;opacityNoHover&#34;:0,&#34;clickAction&#34;:null}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+</description>
+    </item>
+    
+    <item>
       <title>HighChart County Choropleth Map of County Poverty, 2015</title>
       <link>/post/highchart-county-choropleth-map-of-county-poverty-2015/</link>
       <pubDate>Sat, 05 Aug 2017 00:00:00 +0000</pubDate>
       
       <guid>/post/highchart-county-choropleth-map-of-county-poverty-2015/</guid>
-      <description>&lt;p&gt;The following code downloads county-level poverty data in 2015 from the American Community Survey (ACS) via an API using the &lt;code&gt;acs&lt;/code&gt; package. I then create an interactive Highchart map using the package &lt;code&gt;highcharter&lt;/code&gt;.&lt;/p&gt;
+      <description>&lt;iframe seamless src=&#34;https://cdn.rawgit.com/JohnBradford/JohnBradford.github.io/6510c1f5/files/html_widgets/us_poverty_map.html&#34; width=&#34;100%&#34; height=&#34;700&#34;&gt;
+&lt;/iframe&gt;
+&lt;p&gt;The following code downloads county-level poverty data in 2015 from the American Community Survey (ACS) via an API using the &lt;code&gt;acs&lt;/code&gt; package. I then create an interactive Highchart map using the package &lt;code&gt;highcharter&lt;/code&gt;.&lt;/p&gt;
 &lt;div id=&#34;download-acs-poverty-data-via-an-api&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;Download ACS Poverty data via an API&lt;/h3&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tibble)
@@ -65,8 +83,6 @@ hc &amp;lt;- hcmap(&amp;quot;https://code.highcharts.com/mapdata/countries/us/us
 &lt;p&gt;Once the chart is created, it has to be saved using the &lt;code&gt;htmlwidgets&lt;/code&gt; package. I saved it to a folder on my github page using the following code, and then use an iframe html tag to display it.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(htmlwidgets)
 htmlwidgets::saveWidget(hc, file = &amp;quot;us_poverty_map.html&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;iframe seamless src=&#34;/files/html_widgets/us_poverty_map.html&#34; width=&#34;100%&#34; height=&#34;700&#34;&gt;
-&lt;/iframe&gt;
 &lt;/div&gt;
 </description>
     </item>
@@ -2138,19 +2154,7 @@ geom_boxplot(alpha = 0.5, position = &amp;quot;dodge&amp;quot;, color = &amp;quo
       <pubDate>Fri, 12 May 2017 00:00:00 +0000</pubDate>
       
       <guid>/post/police-shooting-heat-maps-county-level/</guid>
-      <description>&lt;p&gt;Below are some new county-level heat maps of police shooting data, compiled from the Lott &amp;amp; Moody (2016) data for years 2013-2015, and the Washington Post for 2016. Below the graphs, the R code is provided.&lt;/p&gt;
-&lt;div class=&#34;figure&#34;&gt;
-&lt;img src=&#34;/img/policeShoot/SVG_map_counts_c_10x6.svg&#34; alt=&#34;Figure 1. Frequency of Civilians Killed by Police per County&#34; /&gt;
-&lt;p class=&#34;caption&#34;&gt;Figure 1. Frequency of Civilians Killed by Police per County&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&#34;figure&#34;&gt;
-&lt;img src=&#34;/img/policeShoot/SVG_map_rates_c_10x6.svg&#34; alt=&#34;Figure 2. Civilians Killed by Police per 100,000 Residents&#34; /&gt;
-&lt;p class=&#34;caption&#34;&gt;Figure 2. Civilians Killed by Police per 100,000 Residents&lt;/p&gt;
-&lt;/div&gt;
-&lt;div class=&#34;figure&#34;&gt;
-&lt;img src=&#34;/img/policeShoot/map_county_rate_1366_768.png&#34; alt=&#34;Figure 3. Killed by Police Rates for Larger Counties&#34; /&gt;
-&lt;p class=&#34;caption&#34;&gt;Figure 3. Killed by Police Rates for Larger Counties&lt;/p&gt;
-&lt;/div&gt;
+      <description>&lt;p&gt;Above are some new county-level heat maps of police shooting data, compiled from the Lott &amp;amp; Moody (2016) data for years 2013-2015, and the Washington Post for 2016. Below the graphs, the R code is provided.&lt;/p&gt;
 &lt;div id=&#34;r-code&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;R Code&lt;/h2&gt;
 &lt;div id=&#34;load-the-data.&#34; class=&#34;section level3&#34;&gt;
@@ -2404,6 +2408,14 @@ ggrepel::geom_label_repel(data = dplyr::filter(df, 1e+05 * killRate &amp;gt; 10,
     xlab(&amp;quot;&amp;quot;) + ylab(&amp;quot;&amp;quot;) + ggtitle(label = &amp;quot;Killed by Police Rates (2013-2016) in Counties with at least 10,000 Residents&amp;quot;, 
     subtitle = &amp;quot;Data from Lott &amp;amp; Moody (2013-2015), Washington Post (2016), and US Census 5-year county population averages (2011-2015).\nSource: johnbradford.github.io&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
+&lt;div id=&#34;convert-to-html-widgets&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;4. Convert to html widgets&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;F1_svg &amp;lt;- svgPanZoom(svg = &amp;quot;JohnBradford.github.io/img/policeShoot/SVG_map_counts_c_10x6.svg&amp;quot;)
+htmlwidgets::saveWidget(F1_svg, file = &amp;quot;SVG_map_counts_c_10x6.html&amp;quot;)
+
+F2_svg &amp;lt;- svgPanZoom(svg = &amp;quot;JohnBradford.github.io/img/policeShoot/SVG_map_rates_c_10x6.svg&amp;quot;)
+htmlwidgets::saveWidget(F2_svg, file = &amp;quot;SVG_map_rates_c_10x6.html&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
 &lt;/div&gt;
 </description>
     </item>
@@ -2473,15 +2485,6 @@ ggrepel::geom_label_repel(data = dplyr::filter(df, 1e+05 * killRate &amp;gt; 10,
       <pubDate>Wed, 21 May 2014 00:00:00 +0000</pubDate>
       
       <guid>/talk/istc_money_knoxville_2014/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>The Treadmill of Destruction and Ecological Exchange in Comparative Perspective: A Panel Study of the Biological Capacity of Nations, 1961-2007</title>
-      <link>/publication/cjas_footprint_2014/</link>
-      <pubDate>Thu, 01 May 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/publication/cjas_footprint_2014/</guid>
       <description></description>
     </item>
     

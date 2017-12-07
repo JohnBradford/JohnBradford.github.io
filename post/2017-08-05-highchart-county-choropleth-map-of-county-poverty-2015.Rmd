@@ -7,6 +7,10 @@ categories: []
 tags: []
 ---
 
+<iframe seamless src="https://cdn.rawgit.com/JohnBradford/JohnBradford.github.io/6510c1f5/files/html_widgets/us_poverty_map.html" width="100%" height="700"></iframe>
+
+
+
 The following code downloads county-level poverty data in 2015 from the American Community Survey (ACS) via an API using the `acs` package.  I then create an interactive Highchart map using the package `highcharter`.
 
 ###Download ACS Poverty data via an API
@@ -81,4 +85,4 @@ htmlwidgets::saveWidget(hc, file="us_poverty_map.html")
 ```
 
 
-<iframe seamless src="/files/html_widgets/us_poverty_map.html" width="100%" height="700"></iframe>
+

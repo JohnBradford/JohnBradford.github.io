@@ -11,14 +11,9 @@ tags:
   - Officer-involved shootings
 ---
 
- Below are some new county-level heat maps of police shooting data, compiled from the Lott & Moody (2016) data for years 2013-2015, and the Washington Post for 2016.  Below the graphs, the R code is provided.
-
-![Figure 1.  Frequency of Civilians Killed by Police per County](/img/policeShoot/SVG_map_counts_c_10x6.svg)
 
 
-![Figure 2.  Civilians Killed by Police per 100,000 Residents](/img/policeShoot/SVG_map_rates_c_10x6.svg)
-
-![Figure 3.  Killed by Police Rates for Larger Counties](/img/policeShoot/map_county_rate_1366_768.png)
+ Above are some new county-level heat maps of police shooting data, compiled from the Lott & Moody (2016) data for years 2013-2015, and the Washington Post for 2016.  Below the graphs, the R code is provided.
 
 
 ## R Code
@@ -324,6 +319,22 @@ newdf +
   ylab("") +
 ggtitle(label="Killed by Police Rates (2013-2016) in Counties with at least 10,000 Residents", 
         subtitle = "Data from Lott & Moody (2013-2015), Washington Post (2016), and US Census 5-year county population averages (2011-2015).\nSource: johnbradford.github.io")
+
+
+
+```
+
+###4.   Convert to html widgets
+```{r, tidy=TRUE, eval=FALSE}
+F1_svg <- svgPanZoom(svg="JohnBradford.github.io/img/policeShoot/SVG_map_counts_c_10x6.svg")
+htmlwidgets::saveWidget(
+  F1_svg, 
+  file = "SVG_map_counts_c_10x6.html")
+
+F2_svg <- svgPanZoom(svg="JohnBradford.github.io/img/policeShoot/SVG_map_rates_c_10x6.svg")
+htmlwidgets::saveWidget(
+  F2_svg, 
+  file = "SVG_map_rates_c_10x6.html")
 
 
 
