@@ -328,24 +328,42 @@ ggtitle(label="Killed by Police Rates (2013-2016) in Counties with at least 10,0
 
 ```
 
-###4.   Convert to html widgets
-```{r,  eval=FALSE}
-F1_svg <- svgPanZoom(svg="JohnBradford.github.io/img/policeShoot/SVG_map_counts_c_10x6.svg")
-htmlwidgets::saveWidget(
-  F1_svg, 
-  file = "SVG_map_counts_c_10x6.html")
+###4.  Pan and Zoom Images
+```{r,  echo=FALSE, eval=FALSE}
+# F1_svg <- svgPanZoom(svg="JohnBradford.github.io/img/policeShoot/SVG_map_counts_c_10x6.svg")
+# htmlwidgets::saveWidget(
+#   F1_svg, 
+#   file = "SVG_map_counts_c_10x6.html")
+# 
+# F2_svg <- svgPanZoom(svg="JohnBradford.github.io/img/policeShoot/SVG_map_rates_c_10x6.svg")
+# htmlwidgets::saveWidget(
+#   F2_svg, 
+#   file = "SVG_map_rates_c_10x6.html")
 
-F2_svg <- svgPanZoom(svg="JohnBradford.github.io/img/policeShoot/SVG_map_rates_c_10x6.svg")
-htmlwidgets::saveWidget(
-  F2_svg, 
-  file = "SVG_map_rates_c_10x6.html")
+# Figure 1.
+# <iframe seamless src="https://cdn.rawgit.com/JohnBradford/JohnBradford.github.io/1a51bc00/files/html_widgets/SVG_map_counts_c_10x6.html" width="100%" height="600"></iframe>
+# 
+# Figure 2. 
+# <iframe seamless src="https://cdn.rawgit.com/JohnBradford/JohnBradford.github.io/1a51bc00/files/html_widgets/SVG_map_rates_c_10x6.html" width="100%" height="600"></iframe>
 
 
 
 ```
 
-Figure 1.
-<iframe seamless src="https://cdn.rawgit.com/JohnBradford/JohnBradford.github.io/1a51bc00/files/html_widgets/SVG_map_counts_c_10x6.html" width="100%" height="600"></iframe>
 
-Figure 2. 
-<iframe seamless src="https://cdn.rawgit.com/JohnBradford/JohnBradford.github.io/1a51bc00/files/html_widgets/SVG_map_rates_c_10x6.html" width="100%" height="600"></iframe>
+```{r, fig.width=10, echo=FALSE, eval=FALSE}
+library(svgPanZoom)
+fig1svg <- download.file(url = "https://cdn.rawgit.com/JohnBradford/JohnBradford.github.io/1a51bc00/img/policeShoot/SVG_map_counts_c_10x6.svg", destfile = "fig1svg.svg")
+
+svgPanZoom("fig1svg.svg")
+```
+
+
+
+```{r,fig.width=10, echo=FALSE, eval=FALSE}
+library(svgPanZoom)
+fig2svg <- download.file(url = "https://cdn.rawgit.com/JohnBradford/JohnBradford.github.io/1a51bc00/img/policeShoot/SVG_map_rates_c_10x6.svg", destfile = "fig2svg.svg")
+
+svgPanZoom("fig2svg.svg")
+```
+
